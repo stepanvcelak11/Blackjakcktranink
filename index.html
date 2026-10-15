@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="cs" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="BJ Wiz PRO">
+  <meta name="theme-color" content="#070b12">
+  <title>BJ Wiz PRO — Blackjack & Hi-Lo Trainer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --felt-from: #0d4a2e;
+      --felt-via: #063722;
+      --felt-to: #031c11;
+    }
+
+    html { background-color: #070b12; }
+
+    body {
+      background-color: #070b12;
+      color: #f8fafc;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      overscroll-behavior: none;
+    }
+
+    .pt-safe { padding-top: max(0.625rem, env(safe-area-inset-top)); }
+    .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+
+    .font-mono-num { font-family: 'JetBrains Mono', monospace; }
+
+    .casino-felt {
+      background: radial-gradient(ellipse at top, var(--felt-from) 0%, var(--felt-via) 65%, var(--felt-to) 100%);
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.65), 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(16, 185, 129, 0.22);
+    }
+
+    .playing-card {
+      width: 68px;
+      height: 98px;
+      background: linear-gradient(160deg, #ffffff 0%, #f1f5f9 100%);
+      border-radius: 9px;
+      box-shadow: 0 8px 16px -2px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(203, 213, 225, 0.9);
+      display: inline-flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 6px 7px;
+      position: relative;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+      flex-shrink: 0;
+      animation: dealIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .playing-card.card-sm {
+      width: 54px;
+      height: 78px;
+      padding: 4px 5px;
+      border-radius: 7px;
+    }
+    .playing-card.card-xs {
+      width: 44px;
+      height: 64px;
+      padding: 3px 4px;
+      border-radius: 6px;
+    }
+    .playing-card.red { color: #dc2626; }
+    .playing-card.black { color: #0f172a; }
+    .playing-card.back {
+      background: repeating-linear-gradient(135deg, #1e293b 0px, #1e293b 6px, #0f172a 6px, #0f172a 12px);
+      border: 2.5px solid #e2e8f0;
+      box-shadow: 0 8px 16px -2px rgba(0,0,0,0.6);
+    }
+    .no-anim .playing-card { animation: none; }
+
+    @keyframes dealIn {
+      from { opacity: 0; transform: translateY(-14px) scale(0.92); }
+      to   { opacity: 1; transform: none; }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+    .shake { animation: shake 0.35s ease; }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translate(-50%, -10px); }
+      to   { opacity: 1; transform: translate(-50%, 0); }
+    }
+    .toast-in { animation: toastIn 0.25s ease; }
+
+    .cell-S { background-color: #eab308; color: #090d16; font-weight: 800; }
+    .cell-H { background-color: #f8fafc; color: #0f172a; font-weight: 700; }
+    .cell-D, .cell-Y, .cell-SUR { background-color: #10b981; color: #052e16; font-weight: 800; }
+    .cell-Ds, .cell-YN { background-color: #38bdf8; color: #082f49; font-weight: 800; }
+    .cell-N { background-color: #1e293b; color: #94a3b8; font-weight: 600; }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    button:disabled { opacity: 0.35; cursor: not-allowed; }
+    kbd {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      padding: 0 3px;
+      border-radius: 3px;
+      background: rgba(0,0,0,0.15);
+      margin-left: 2px;
+    }
+  </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden max-w-md mx-auto border-x border-slate-800/80 bg-[#070b12] relative">
+
+  <!-- TOAST (level up apod.) -->
+  <div id="toast" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl bg-emerald-500 text-slate-950 text-xs font-extrabold shadow-2xl"></div>
+
+  <!-- HORNÍ NAVIGAČNÍ LIŠTA -->
+  <header class="bg-slate-950/90 backdrop-blur-md px-3.5 pt-safe pb-2.5 flex justify-between items-center border-b border-slate-800/80 shrink-0 z-20">
+    <div class="flex items-center space-x-2.5">
+      <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-700 flex items-center justify-center shadow-md shadow-emerald-950/50 text-slate-950">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C7 8 4 11.5 4 14.5C4 17.2 6.2 19 8.8 19C10.2 19 11.2 18.3 11.7 17.5L10.3 22H13.7L12.3 17.5C12.8 18.3 13.8 19 15.2 19C17.8 19 20 17.2 20 14.5C20 11.5 17 8 12 2Z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="flex items-center space-x-1.5">
+          <h1 class="font-extrabold text-sm tracking-tight text-white">BJ WIZ</h1>
+          <span class="text-[10px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">PRO</span>
+        </div>
+        <div class="text-[10px] text-slate-400 font-medium flex items-center space-x-1">
+          <span>Úroveň <b id="header-level" class="text-slate-200">1</b></span>
+          <span>•</span>
+          <span id="header-xp" class="font-mono-num text-emerald-400">0 XP</span>
+        </div>
+        <div class="w-24 h-1 bg-slate-800 rounded-full overflow-hidden mt-0.5">
+          <div id="header-xp-bar" class="h-full bg-emerald-500 transition-all duration-300" style="width:0%"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-1.5">
+      <button onclick="toggleSound()" id="btn-sound" class="p-1.5 rounded-md bg-slate-900 border border-slate-800 text-emerald-400" title="Zvukové efekty">
+        <svg id="icon-sound-on" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        <svg id="icon-sound-off" class="w-4 h-4 hidden text-slate-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+      </button>
+      <button onclick="toggleRule('das')" id="btn-rule-das" class="px-2 py-1 rounded-md text-[11px] font-bold border transition-colors" title="Double After Split (zdvojení po rozdělení)">DAS</button>
+      <button onclick="toggleRule('sur')" id="btn-rule-sur" class="px-2 py-1 rounded-md text-[11px] font-bold border transition-colors" title="Late Surrender (pozdní vzdání)">SUR</button>
+    </div>
+  </header>
+
+  <!-- HLAVNÍ OBSAHOVÁ ČÁST -->
+  <main class="flex-1 overflow-y-auto no-scrollbar relative">
+
+    <!-- ================= 1. DRIL STRATEGIE (FLASHCARDS) ================= -->
+    <section id="view-drill" class="p-3.5 min-h-full flex flex-col justify-between">
+      <div class="space-y-2.5">
+        <div class="flex items-center justify-between gap-2">
+          <div class="relative flex-1">
+            <select id="drill-filter" onchange="nextDrillHand()" class="w-full bg-slate-900 text-xs font-semibold text-slate-200 pl-3 pr-7 py-2 rounded-lg border border-slate-800 focus:outline-none focus:border-emerald-500">
+              <option value="ALL">Všechny kombinace</option>
+              <option value="MISTAKES">Moje chyby (Chytré opakování)</option>
+              <option value="HARD">Hard Totals (Tvrdé součty)</option>
+              <option value="SOFT">Soft Totals (Měkké součty A,2–A,9)</option>
+              <option value="PAIR">Pair Splitting (Páry 2,2–A,A)</option>
+            </select>
+          </div>
+          <button onclick="toggleSpeedTimer()" id="btn-speed-mode" class="flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-slate-800 bg-slate-900 text-slate-400 transition">
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/>
+            </svg>
+            <span>3s Timer</span>
+          </button>
+        </div>
+
+        <div id="drill-timer-wrap" class="hidden w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+          <div id="drill-timer-bar" class="bg-amber-400 h-full w-full"></div>
+        </div>
+
+        <div id="drill-felt" class="casino-felt rounded-2xl p-4 flex flex-col items-center justify-between min-h-[268px] relative">
+          <div class="absolute top-3 left-3 flex items-center space-x-1 bg-slate-950/60 border border-slate-800/80 px-2 py-1 rounded-md text-[11px] font-semibold text-slate-300">
+            <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            <span>Série: <b id="drill-streak" class="font-mono-num text-white">0</b></span>
+            <span class="text-slate-500">/ max <b id="drill-best" class="font-mono-num text-amber-300">0</b></span>
+          </div>
+
+          <div class="absolute top-3 right-3 bg-slate-950/60 border border-slate-800/80 px-2 py-1 rounded-md text-[11px] font-mono-num text-emerald-400 font-bold" id="drill-hand-tag">HARD</div>
+
+          <div class="text-center mt-6">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-200/60 block mb-1.5">Karta Dealera</span>
+            <div id="drill-dealer-card" class="flex justify-center"></div>
+          </div>
+
+          <div id="drill-feedback" class="w-full my-2 min-h-[46px] flex items-center justify-center px-3 py-1.5 rounded-xl text-xs font-semibold text-center transition-all"></div>
+
+          <div class="text-center">
+            <div id="drill-player-cards" class="flex justify-center space-x-2.5 mb-1.5"></div>
+            <span id="drill-player-label" class="text-[11px] uppercase tracking-wider text-emerald-100/90 font-bold block">Tvoje ruka</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-3 space-y-2">
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="submitDrillAction('H')" class="bg-slate-100 hover:bg-white active:scale-[0.98] text-slate-950 font-extrabold py-3.5 rounded-xl shadow-lg flex items-center justify-center space-x-2 text-sm transition">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+            <span>HIT <kbd>H</kbd></span>
+          </button>
+          <button onclick="submitDrillAction('S')" class="bg-amber-400 hover:bg-amber-300 active:scale-[0.98] text-slate-950 font-extrabold py-3.5 rounded-xl shadow-lg flex items-center justify-center space-x-2 text-sm transition">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+            <span>STAND <kbd>S</kbd></span>
+          </button>
+          <button onclick="submitDrillAction('D')" class="bg-emerald-500 hover:bg-emerald-400 active:scale-[0.98] text-slate-950 font-extrabold py-3.5 rounded-xl shadow-lg flex items-center justify-center space-x-2 text-sm transition">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m17 11-5-5-5 5M17 18l-5-5-5 5"/></svg>
+            <span>DOUBLE <kbd>D</kbd></span>
+          </button>
+          <button onclick="submitDrillAction('P')" class="bg-sky-400 hover:bg-sky-300 active:scale-[0.98] text-slate-950 font-extrabold py-3.5 rounded-xl shadow-lg flex items-center justify-center space-x-2 text-sm transition">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 3h5v5M8 3H3v5M3 16v5h5M21 16v5h-5"/></svg>
+            <span>SPLIT <kbd>P</kbd></span>
+          </button>
+        </div>
+        <button onclick="submitDrillAction('SUR')" class="w-full bg-slate-800 hover:bg-slate-700 active:scale-[0.99] text-slate-200 border border-slate-700 font-bold py-2.5 rounded-xl flex items-center justify-center space-x-2 text-xs uppercase tracking-wider transition">
+          <svg class="w-3.5 h-3.5 text-teal-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg>
+          <span>SURRENDER — Vzdát hru <kbd>R</kbd></span>
+        </button>
+        <p class="text-center text-[10px] text-slate-500">Pravidla: 6 balíčků • dealer táhne na soft 17 (H17) • peek • BJ 3:2</p>
+      </div>
+    </section>
+
+    <!-- ================= 2. HI-LO AKADEMIE (3 MINIHRY) ================= -->
+    <section id="view-count" class="p-3.5 min-h-full hidden flex-col justify-between">
+      <div class="space-y-3">
+        <div class="grid grid-cols-3 gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-bold">
+          <button onclick="switchCountMode('STREAM')" id="tab-count-STREAM" class="py-1.5 rounded-lg bg-slate-800 text-emerald-400 transition">1. Pás karet</button>
+          <button onclick="switchCountMode('TABLE')" id="tab-count-TABLE" class="py-1.5 rounded-lg text-slate-400 transition">2. Stůl (7 karet)</button>
+          <button onclick="switchCountMode('SHOE')" id="tab-count-SHOE" class="py-1.5 rounded-lg text-slate-400 transition">3. Bota & TC</button>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2 bg-slate-900/90 p-2 rounded-xl border border-slate-800/90 text-center text-[11px]">
+          <div class="bg-emerald-950/50 border border-emerald-800/50 py-1.5 px-2 rounded-lg">
+            <div class="font-extrabold text-emerald-400">LOW (+1)</div>
+            <div class="text-slate-300 font-mono-num text-xs">2, 3, 4, 5, 6</div>
+          </div>
+          <div class="bg-slate-800/50 border border-slate-700/60 py-1.5 px-2 rounded-lg">
+            <div class="font-extrabold text-slate-300">NEUTRAL (0)</div>
+            <div class="text-slate-400 font-mono-num text-xs">7, 8, 9</div>
+          </div>
+          <div class="bg-rose-950/50 border border-rose-800/50 py-1.5 px-2 rounded-lg">
+            <div class="font-extrabold text-rose-400">HIGH (−1)</div>
+            <div class="text-slate-300 font-mono-num text-xs">10, J, Q, K, A</div>
+          </div>
+        </div>
+
+        <div class="casino-felt rounded-2xl p-4 flex flex-col items-center justify-center min-h-[215px] relative">
+          <div class="absolute top-2.5 right-3 text-[11px] text-emerald-200/80 font-mono-num font-bold" id="count-status-badge">Připraveno</div>
+          <label class="absolute top-2.5 left-3 flex items-center space-x-1.5 text-[11px] text-emerald-200/80 font-semibold" id="count-hint-toggle-wrap">
+            <input type="checkbox" id="count-show-hint" class="accent-emerald-500">
+            <span>Nápověda</span>
+          </label>
+          <div id="count-stage" class="flex flex-wrap gap-2 items-center justify-center my-2 mt-6">
+            <span class="text-emerald-100/70 text-xs text-center px-4">Vyber režim nahoře a klikni na Spustit dril</span>
+          </div>
+          <div id="count-hint" class="text-xs font-mono-num font-bold text-emerald-300 min-h-[16px] text-center px-2"></div>
+        </div>
+
+        <div id="count-input-panel" class="hidden bg-slate-900 p-3.5 rounded-xl border border-slate-800 text-center space-y-2.5">
+          <p id="count-question-label" class="text-xs font-bold text-slate-200 uppercase tracking-wider">Zadej výsledný Running Count:</p>
+          <div class="flex items-center justify-center space-x-3">
+            <button onclick="stepCountInput(-1)" class="w-10 h-10 rounded-lg bg-slate-800 hover:bg-slate-700 font-mono-num font-extrabold text-lg text-white border border-slate-700">−</button>
+            <input type="text" inputmode="numeric" id="count-user-val" value="0" class="w-20 h-10 bg-slate-950 border border-slate-700 rounded-lg text-center font-mono-num text-lg font-extrabold text-emerald-400 focus:outline-none">
+            <button onclick="stepCountInput(1)" class="w-10 h-10 rounded-lg bg-slate-800 hover:bg-slate-700 font-mono-num font-extrabold text-lg text-white border border-slate-700">+</button>
+          </div>
+          <button onclick="checkCountAnswer()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold py-2.5 rounded-lg text-xs uppercase tracking-wider">Potvrdit výsledek <kbd>Enter</kbd></button>
+        </div>
+
+        <div id="count-feedback" class="text-center text-xs font-bold min-h-[20px]"></div>
+      </div>
+
+      <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800 space-y-2.5 mt-3">
+        <div id="count-speed-row" class="flex justify-between items-center text-xs">
+          <span class="text-slate-300 font-medium">Rychlost: <b id="speed-val-label" class="text-emerald-400 font-mono-num">1.0s</b></span>
+          <input type="range" id="count-speed-slider" min="0.4" max="2.6" step="0.2" value="1.0" oninput="document.getElementById('speed-val-label').innerText = parseFloat(this.value).toFixed(1) + 's'" class="w-32 accent-emerald-500">
+        </div>
+        <div id="count-length-row" class="flex justify-between items-center text-xs">
+          <span class="text-slate-300 font-medium">Počet karet: <b id="len-val-label" class="text-emerald-400 font-mono-num">15</b></span>
+          <input type="range" id="count-length-slider" min="10" max="52" step="1" value="15" oninput="document.getElementById('len-val-label').innerText = this.value" class="w-32 accent-emerald-500">
+        </div>
+        <button onclick="startSelectedCountDrill()" class="w-full bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] text-slate-950 font-extrabold py-3 rounded-xl shadow-lg text-xs uppercase tracking-wider flex items-center justify-center space-x-2">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>Spustit dril počítání</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ================= 3. PRO SIMULÁTOR (REÁLNÁ HRA) ================= -->
+    <section id="view-game" class="p-3.5 min-h-full hidden flex-col justify-between">
+      <div class="space-y-2">
+        <div class="grid grid-cols-3 gap-1.5 bg-slate-900 p-2 rounded-xl border border-slate-800 text-xs">
+          <div class="flex items-center space-x-1.5 px-1">
+            <svg class="w-4 h-4 text-emerald-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
+            <div>
+              <div class="text-[9px] text-slate-400 uppercase font-bold">Bankroll</div>
+              <div class="font-mono-num font-extrabold text-white"><span id="game-bank">1000</span> $</div>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-1.5 px-1 border-x border-slate-800">
+            <svg class="w-4 h-4 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg>
+            <div>
+              <div class="text-[9px] text-slate-400 uppercase font-bold">Sázka</div>
+              <div class="font-mono-num font-extrabold text-amber-400"><span id="game-bet">25</span> $</div>
+            </div>
+          </div>
+
+          <button onclick="toggleGameHUD()" class="flex items-center justify-between px-2 py-1 rounded-lg bg-slate-950 border border-slate-800 text-left">
+            <div>
+              <div class="text-[9px] text-slate-400 uppercase font-bold">Hi-Lo HUD</div>
+              <div id="game-hud-text" class="font-mono-num font-bold text-[11px] text-emerald-400">RC: ? | TC: ?</div>
+            </div>
+            <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+
+        <div id="game-spread-bar" class="hidden bg-slate-900/90 border border-slate-800 px-3 py-1.5 rounded-lg flex justify-between items-center text-[11px]">
+          <span class="text-slate-300">Bet Spread (<b id="spread-tc-label" class="text-emerald-400">TC 0</b>): <b id="spread-rec-label" class="text-amber-400">1× (25 $)</b></span>
+          <button onclick="applyRecommendedBet()" class="text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 px-2 py-0.5 rounded">Vsadit</button>
+        </div>
+
+        <div class="casino-felt rounded-2xl p-3.5 min-h-[255px] flex flex-col justify-between relative">
+          <div class="absolute top-2.5 left-3 text-[10px] font-mono-num text-emerald-200/70">
+            Bota: <span id="game-shoe-left">312</span> karet
+          </div>
+          <div class="absolute top-2.5 right-3 text-[10px] font-mono-num text-emerald-200/70">
+            Bilance: <span id="game-session" class="font-bold">0 $</span>
+          </div>
+
+          <div class="text-center mt-4">
+            <span class="text-[10px] uppercase tracking-wider text-emerald-200/70 font-bold block mb-1">Dealer (<span id="game-dealer-total">?</span>)</span>
+            <div id="game-dealer-cards" class="flex justify-center space-x-1.5 min-h-[82px] items-center"></div>
+          </div>
+
+          <div id="game-coach-alert" class="my-1.5 text-center text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-slate-950/85 border border-slate-800 hidden"></div>
+
+          <div id="game-player-hands-wrap" class="flex flex-wrap justify-center gap-2 items-end min-h-[96px]"></div>
+        </div>
+      </div>
+
+      <div class="mt-2.5">
+        <div id="game-bet-panel" class="space-y-2">
+          <div class="grid grid-cols-4 gap-1.5">
+            <button onclick="addBet(10)" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 py-2 rounded-lg font-mono-num text-xs font-extrabold text-sky-400">+10 $</button>
+            <button onclick="addBet(25)" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 py-2 rounded-lg font-mono-num text-xs font-extrabold text-emerald-400">+25 $</button>
+            <button onclick="addBet(100)" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 py-2 rounded-lg font-mono-num text-xs font-extrabold text-amber-400">+100 $</button>
+            <button onclick="clearBet()" class="bg-rose-950/60 hover:bg-rose-900/60 border border-rose-800/70 py-2 rounded-lg text-xs font-bold text-rose-300">Reset</button>
+          </div>
+          <button onclick="startGameRound()" class="w-full bg-emerald-500 hover:bg-emerald-400 active:scale-[0.99] text-slate-950 font-extrabold py-3.5 rounded-xl shadow-lg text-sm uppercase tracking-wider">
+            Rozdat karty (Deal) <kbd>Enter</kbd>
+          </button>
+          <div class="flex justify-between items-center text-[10px] text-slate-500 px-1">
+            <span>6 balíčků • H17 • BJ 3:2 • split do 4 rukou</span>
+            <button onclick="resetBankroll()" class="text-rose-400/80 hover:underline font-semibold">Nový bankroll</button>
+          </div>
+        </div>
+
+        <div id="game-action-panel" class="hidden grid grid-cols-3 gap-1.5">
+          <button id="btn-game-hit" onclick="playGameAction('H')" class="bg-slate-100 text-slate-950 font-extrabold py-3 rounded-xl text-xs">HIT <kbd>H</kbd></button>
+          <button id="btn-game-stand" onclick="playGameAction('S')" class="bg-amber-400 text-slate-950 font-extrabold py-3 rounded-xl text-xs">STAND <kbd>S</kbd></button>
+          <button id="btn-game-double" onclick="playGameAction('D')" class="bg-emerald-500 text-slate-950 font-extrabold py-3 rounded-xl text-xs">DOUBLE <kbd>D</kbd></button>
+          <button id="btn-game-split" onclick="playGameAction('P')" class="bg-sky-400 text-slate-950 font-extrabold py-2.5 rounded-xl text-xs col-span-2">SPLIT <kbd>P</kbd></button>
+          <button id="btn-game-sur" onclick="playGameAction('SUR')" class="bg-slate-800 text-slate-200 border border-slate-700 font-bold py-2.5 rounded-xl text-xs">SURRENDER <kbd>R</kbd></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 4. TABULKA & STATISTIKY ================= -->
+    <section id="view-chart" class="p-3.5 hidden space-y-4 pb-10">
+      <div class="bg-slate-900 p-3.5 rounded-xl border border-slate-800">
+        <div class="flex justify-between items-center mb-2.5">
+          <div class="flex items-center space-x-1.5">
+            <svg class="w-4 h-4 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+            <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-200">Přehled výkonu</h2>
+          </div>
+          <button onclick="resetAllStats()" class="text-[11px] text-rose-400 hover:underline font-semibold">Vynulovat data</button>
+        </div>
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800/80">
+            <div id="stat-total-hands" class="font-mono-num text-base font-extrabold text-white">0</div>
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Rozhodnutí</div>
+          </div>
+          <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800/80">
+            <div id="stat-strat-rate" class="font-mono-num text-base font-extrabold text-emerald-400">—</div>
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Přesnost tabulky</div>
+          </div>
+          <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800/80">
+            <div id="stat-count-rate" class="font-mono-num text-base font-extrabold text-sky-400">—</div>
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Hi-Lo přesnost</div>
+          </div>
+          <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800/80">
+            <div id="stat-best-streak" class="font-mono-num text-base font-extrabold text-amber-300">0</div>
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Nejdelší série</div>
+          </div>
+          <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800/80">
+            <div id="stat-rounds" class="font-mono-num text-base font-extrabold text-white">0</div>
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Odehráno kol</div>
+          </div>
+          <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800/80">
+            <div id="stat-mistakes" class="font-mono-num text-base font-extrabold text-rose-400">0</div>
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Chyb k opakování</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-2.5">
+        <div class="flex items-center justify-between gap-2">
+          <div class="flex flex-1 space-x-1 bg-slate-900 p-1 rounded-xl border border-slate-800 text-xs font-bold">
+            <button onclick="renderStrategyTable('HARD')" id="tab-tbl-HARD" class="flex-1 py-1.5 rounded-lg bg-slate-800 text-emerald-400">Hard</button>
+            <button onclick="renderStrategyTable('SOFT')" id="tab-tbl-SOFT" class="flex-1 py-1.5 rounded-lg text-slate-400">Soft</button>
+            <button onclick="renderStrategyTable('PAIR')" id="tab-tbl-PAIR" class="flex-1 py-1.5 rounded-lg text-slate-400">Páry</button>
+          </div>
+          <button onclick="toggleHeatmap()" id="btn-heatmap" class="px-3 py-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-300 text-xs font-bold flex items-center space-x-1">
+            <svg class="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+            <span>Heatmapa</span>
+          </button>
+        </div>
+
+        <div id="strategy-table-container" class="overflow-x-auto rounded-xl border border-slate-800 shadow-inner"></div>
+        <p class="text-[10px] text-slate-500 px-1">Tip: klikni na buňku tabulky a procvičíš přesně tuhle situaci v Drilu.</p>
+
+        <div class="bg-slate-900 p-3 rounded-xl border border-slate-800 grid grid-cols-2 gap-1.5 text-[11px] text-slate-300">
+          <div><span class="inline-block w-5 text-center rounded cell-H mr-1.5">H</span>Hit (Další karta)</div>
+          <div><span class="inline-block w-5 text-center rounded cell-S mr-1.5">S</span>Stand (Stát)</div>
+          <div><span class="inline-block w-5 text-center rounded cell-D mr-1.5">D</span>Double (jinak Hit)</div>
+          <div><span class="inline-block w-5 text-center rounded cell-Ds mr-1.5">Ds</span>Double (jinak Stand)</div>
+          <div><span class="inline-block w-5 text-center rounded cell-Y mr-1.5">Y</span>Split (Rozdělit pár)</div>
+          <div><span class="inline-block w-7 text-center rounded cell-YN mr-1.5">Y/N</span>Split jen při DAS</div>
+          <div class="col-span-2"><span class="inline-block w-8 text-center rounded cell-SUR mr-1.5">SUR</span>Surrender (bez SUR: Hit, u 17 Stand)</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- SPODNÍ NAVIGACE -->
+  <nav class="bg-slate-950 border-t border-slate-800/90 grid grid-cols-4 text-[11px] font-bold shrink-0 pb-safe">
+    <button onclick="switchMainView('drill')" id="nav-btn-drill" class="py-2.5 flex flex-col items-center space-y-1 text-emerald-400">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <span>Dril Tabulky</span>
+    </button>
+    <button onclick="switchMainView('count')" id="nav-btn-count" class="py-2.5 flex flex-col items-center space-y-1 text-slate-400">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2M15 20v2M2 15h2M2 9h2M20 15h2M20 9h2M9 2v2M9 20v2"/></svg>
+      <span>Hi-Lo Počty</span>
+    </button>
+    <button onclick="switchMainView('game')" id="nav-btn-game" class="py-2.5 flex flex-col items-center space-y-1 text-slate-400">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><circle cx="15.5" cy="8.5" r="1.5"/><circle cx="15.5" cy="15.5" r="1.5"/><circle cx="8.5" cy="15.5" r="1.5"/></svg>
+      <span>PRO Hra</span>
+    </button>
+    <button onclick="switchMainView('chart')" id="nav-btn-chart" class="py-2.5 flex flex-col items-center space-y-1 text-slate-400">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect width="4" height="7" x="7" y="10" rx="1"/><rect width="4" height="12" x="15" y="5" rx="1"/></svg>
+      <span>Tabulka</span>
+    </button>
+  </nav>
+
+<script>
+// ==================== POMOCNÉ FUNKCE ====================
+const $ = id => document.getElementById(id);
+const randPick = arr => arr[Math.floor(Math.random() * arr.length)];
+const fmtSigned = n => (n > 0 ? '+' + n : String(n));
+
+function storageGet(key) {
+  try { return JSON.parse(localStorage.getItem(key)); } catch (e) { return null; }
+}
+function storageSet(key, val) {
+  try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {}
+}
+
+let toastTimer = null;
+function showToast(msg) {
+  const t = $('toast');
+  t.innerText = msg;
+  t.classList.remove('hidden', 'toast-in');
+  void t.offsetWidth;
+  t.classList.add('toast-in');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.add('hidden'), 2200);
+}
+
+function shakeEl(el) {
+  el.classList.remove('shake');
+  void el.offsetWidth;
+  el.classList.add('shake');
+}
+
+// ==================== ZVUKOVÝ SYNTETIZÁTOR (WEB AUDIO API) ====================
+const savedSettings = storageGet('bj_wiz_pro_settings') || {};
+let soundEnabled = savedSettings.sound !== false;
+let audioCtx = null;
+
+function playTone(freq, type = 'sine', duration = 0.09) {
+  if (!soundEnabled) return;
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
+  } catch (e) {}
+}
+
+function saveSettings() {
+  storageSet('bj_wiz_pro_settings', { sound: soundEnabled, das: rules.das, sur: rules.sur });
+}
+
+function renderSoundIcon() {
+  $('icon-sound-on').classList.toggle('hidden', !soundEnabled);
+  $('icon-sound-off').classList.toggle('hidden', soundEnabled);
+}
+
+function toggleSound() {
+  soundEnabled = !soundEnabled;
+  renderSoundIcon();
+  saveSettings();
+}
+
+// ==================== 1. VEKTOROVÉ IKONY KARET ====================
+const SUIT_SVG = {
+  spade: `<svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full"><path d="M12 2C7 8 4 11.5 4 14.5C4 17.2 6.2 19 8.8 19C10.2 19 11.2 18.3 11.7 17.5L10.3 22H13.7L12.3 17.5C12.8 18.3 13.8 19 15.2 19C17.8 19 20 17.2 20 14.5C20 11.5 17 8 12 2Z"/></svg>`,
+  heart: `<svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`,
+  diamond: `<svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full"><path d="M12 2L20 12L12 22L4 12L12 2Z"/></svg>`,
+  club: `<svg viewBox="0 0 24 24" fill="currentColor" class="w-full h-full"><path d="M12 3a4 4 0 0 0-3.46 6 4 4 0 1 0-1.08 7.85c.88 0 1.7-.28 2.37-.76L8.5 21h7l-1.33-4.91c.67.48 1.49.76 2.37.76a4 4 0 1 0-1.08-7.85A4 4 0 0 0 12 3z"/></svg>`
+};
+const SUIT_KEYS = ['spade', 'heart', 'diamond', 'club'];
+const FACE_RANKS = ['10', 'J', 'Q', 'K'];
+
+// size: '' | 'sm' | 'xs'
+function renderCard(rank, suitKey = 'spade', faceDown = false, size = '') {
+  if (size === true) size = 'sm';
+  const sizeCls = size ? 'card-' + size : '';
+  if (faceDown) return `<div class="playing-card back ${sizeCls}"></div>`;
+  const isRed = suitKey === 'heart' || suitKey === 'diamond';
+  const svg = SUIT_SVG[suitKey] || SUIT_SVG.spade;
+  const small = !!size;
+  const centerSize = size === 'xs' ? 'w-4 h-4' : (small ? 'w-5 h-5' : 'w-7 h-7');
+  const cornerSuitSize = small ? 'w-2.5 h-2.5' : 'w-3 h-3';
+  const txt = size === 'xs' ? 'text-[10px]' : (small ? 'text-[11px]' : 'text-xs');
+
+  return `
+    <div class="playing-card ${isRed ? 'red' : 'black'} ${sizeCls}">
+      <div class="flex flex-col items-center leading-none w-4">
+        <span class="font-mono-num font-extrabold ${txt}">${rank}</span>
+        <span class="${cornerSuitSize} mt-0.5">${svg}</span>
+      </div>
+      <div class="${centerSize} self-center opacity-90">${svg}</div>
+      <div class="flex flex-col items-center leading-none w-4 self-end rotate-180">
+        <span class="font-mono-num font-extrabold ${txt}">${rank}</span>
+        <span class="${cornerSuitSize} mt-0.5">${svg}</span>
+      </div>
+    </div>`;
+}
+
+// ==================== 2. TABULKA ZÁKLADNÍ STRATEGIE (6 balíčků, H17, DAS, LS) ====================
+const DEALER_COLS = ['2','3','4','5','6','7','8','9','10','A'];
+
+const HARD_CHART = {
+  17: ['S','S','S','S','S','S','S','S','S','SUR'],
+  16: ['S','S','S','S','S','H','H','SUR','SUR','SUR'],
+  15: ['S','S','S','S','S','H','H','H','SUR','SUR'],
+  14: ['S','S','S','S','S','H','H','H','H','H'],
+  13: ['S','S','S','S','S','H','H','H','H','H'],
+  12: ['H','H','S','S','S','H','H','H','H','H'],
+  11: ['D','D','D','D','D','D','D','D','D','D'],
+  10: ['D','D','D','D','D','D','D','D','H','H'],
+   9: ['H','D','D','D','D','H','H','H','H','H'],
+   8: ['H','H','H','H','H','H','H','H','H','H']
+};
+
+const SOFT_CHART = {
+  9: ['S','S','S','S','S','S','S','S','S','S'],
+  8: ['S','S','S','S','Ds','S','S','S','S','S'],
+  7: ['Ds','Ds','Ds','Ds','Ds','S','S','H','H','H'],
+  6: ['H','D','D','D','D','H','H','H','H','H'],
+  5: ['H','H','D','D','D','H','H','H','H','H'],
+  4: ['H','H','D','D','D','H','H','H','H','H'],
+  3: ['H','H','H','D','D','H','H','H','H','H'],
+  2: ['H','H','H','D','D','H','H','H','H','H']
+};
+
+const PAIR_CHART = {
+  'A': ['Y','Y','Y','Y','Y','Y','Y','Y','Y','Y'],
+  '10':['N','N','N','N','N','N','N','N','N','N'],
+  '9': ['Y','Y','Y','Y','Y','N','Y','Y','N','N'],
+  '8': ['Y','Y','Y','Y','Y','Y','Y','Y','Y','Y'],
+  '7': ['Y','Y','Y','Y','Y','Y','N','N','N','N'],
+  '6': ['YN','Y','Y','Y','Y','N','N','N','N','N'],
+  '5': ['N','N','N','N','N','N','N','N','N','N'],
+  '4': ['N','N','N','YN','YN','N','N','N','N','N'],
+  '3': ['YN','YN','Y','Y','Y','Y','N','N','N','N'],
+  '2': ['YN','YN','Y','Y','Y','Y','N','N','N','N']
+};
+
+let rules = {
+  das: savedSettings.das !== false,
+  sur: savedSettings.sur !== false
+};
+
+const DEFAULT_STATS = () => ({
+  xp: 0, streak: 0, bestStreak: 0,
+  stratTotal: 0, stratCorrect: 0,
+  countTotal: 0, countCorrect: 0,
+  rounds: 0,
+  cellStats: {}, mistakesQueue: []
+});
+let appStats = Object.assign(DEFAULT_STATS(), storageGet('bj_wiz_pro_v2') || {});
+if (!Array.isArray(appStats.mistakesQueue)) appStats.mistakesQueue = [];
+if (!appStats.cellStats || typeof appStats.cellStats !== 'object') appStats.cellStats = {};
+
+function saveAppState() {
+  storageSet('bj_wiz_pro_v2', appStats);
+  refreshHeaderAndStats();
+}
+
+function addXP(amount) {
+  const before = Math.floor(appStats.xp / 200);
+  appStats.xp += amount;
+  const after = Math.floor(appStats.xp / 200);
+  if (after > before) {
+    showToast(`🎉 Nová úroveň ${after + 1}!`);
+    playTone(880, 'sine', 0.12);
+    setTimeout(() => playTone(1175, 'sine', 0.18), 120);
+  }
+}
+
+function renderRuleButtons() {
+  ['das', 'sur'].forEach(key => {
+    $('btn-rule-' + key).className = rules[key]
+      ? 'px-2 py-1 rounded-md text-[11px] font-bold border transition-colors bg-emerald-950/80 text-emerald-300 border-emerald-700/70'
+      : 'px-2 py-1 rounded-md text-[11px] font-bold border transition-colors bg-slate-900 text-slate-500 border-slate-800 line-through';
+  });
+}
+
+function toggleRule(key) {
+  rules[key] = !rules[key];
+  renderRuleButtons();
+  saveSettings();
+  showToast(`${key.toUpperCase()} ${rules[key] ? 'zapnuto' : 'vypnuto'}`);
+  if (roundInProgress) renderSimTable(true);
+}
+
+function getHiLoVal(rank) {
+  if (['2','3','4','5','6'].includes(rank)) return 1;
+  if (['7','8','9'].includes(rank)) return 0;
+  return -1;
+}
+
+function normTen(r) {
+  return FACE_RANKS.includes(r) ? '10' : r;
+}
+
+function cardValue(r) {
+  if (r === 'A') return 11;
+  if (FACE_RANKS.includes(r)) return 10;
+  return parseInt(r, 10);
+}
+
+// Vrací { total, soft } pro pole ranků
+function scoreRanks(ranks) {
+  let sum = 0, aces = 0;
+  for (const r of ranks) {
+    sum += cardValue(r);
+    if (r === 'A') aces++;
+  }
+  while (sum > 21 && aces > 0) { sum -= 10; aces--; }
+  return { total: sum, soft: aces > 0 };
+}
+
+const ACTION_LABEL = { H: 'HIT', S: 'STAND', D: 'DOUBLE', P: 'SPLIT', SUR: 'SURRENDER' };
+
+/**
+ * opts.canDouble   – lze zdvojit (2 karty, dost peněz, DAS po splitu)
+ * opts.canSplit    – lze rozdělit
+ * opts.canSurrender – lze se vzdát (jen první 2 karty původní ruky)
+ */
+function evaluateBasicStrategy(pCards, dealerRank, opts = {}) {
+  const canDouble = opts.canDouble !== undefined ? opts.canDouble : pCards.length === 2;
+  const canSplit = opts.canSplit !== undefined ? opts.canSplit : true;
+  const canSurrender = opts.canSurrender !== undefined ? opts.canSurrender : pCards.length === 2;
+
+  const dNorm = normTen(dealerRank);
+  const dIdx = DEALER_COLS.indexOf(dNorm);
+
+  const isPair = pCards.length === 2 && normTen(pCards[0]) === normTen(pCards[1]);
+  if (canSplit && isPair) {
+    const pKey = normTen(pCards[0]);
+    const cell = PAIR_CHART[pKey][dIdx];
+    const cellId = `PAIR_${pKey}_${dNorm}`;
+    if (cell === 'Y' || (cell === 'YN' && rules.das)) {
+      return { action: 'P', code: cell, cellId, desc: `Pár ${pKey},${pKey} proti ${dNorm} → SPLIT${cell === 'YN' ? ' (díky DAS)' : ''}` };
+    }
+  }
+
+  const { total: sum, soft: isSoft } = scoreRanks(pCards);
+  const pairNoSplitId = (canSplit && isPair) ? `PAIR_${normTen(pCards[0])}_${dNorm}` : null;
+
+  if (isSoft && sum >= 13 && sum <= 20) {
+    const kicker = sum - 11;
+    const cell = SOFT_CHART[kicker][dIdx];
+    const cellId = pairNoSplitId || `SOFT_${kicker}_${dNorm}`;
+    if (cell === 'Ds') {
+      return { action: canDouble ? 'D' : 'S', code: 'Ds', cellId, desc: `Soft ${sum} (A,${kicker}) proti ${dNorm} → ${canDouble ? 'DOUBLE' : 'STAND (double nelze)'}` };
+    }
+    if (cell === 'D') {
+      return { action: canDouble ? 'D' : 'H', code: 'D', cellId, desc: `Soft ${sum} (A,${kicker}) proti ${dNorm} → ${canDouble ? 'DOUBLE' : 'HIT (double nelze)'}` };
+    }
+    return { action: cell, code: cell, cellId, desc: `Soft ${sum} (A,${kicker}) proti ${dNorm} → ${ACTION_LABEL[cell]}` };
+  }
+
+  if (isSoft && sum === 12) {
+    // A,A bez možnosti splitu = soft 12 → vždy Hit
+    return { action: 'H', code: 'H', cellId: pairNoSplitId || `HARD_8_${dNorm}`, desc: `Soft 12 (A,A) proti ${dNorm} → HIT` };
+  }
+  if (isSoft && sum === 21) {
+    return { action: 'S', code: 'S', cellId: `HARD_17_${dNorm}`, desc: `Soft 21 → STAND` };
+  }
+
+  const clamped = Math.max(8, Math.min(17, sum));
+  const cell = HARD_CHART[clamped][dIdx];
+  const cellId = pairNoSplitId || `HARD_${clamped}_${dNorm}`;
+
+  if (cell === 'SUR') {
+    if (rules.sur && canSurrender) {
+      return { action: 'SUR', code: 'SUR', cellId, desc: `Hard ${sum} proti ${dNorm} → SURRENDER` };
+    }
+    const fb = sum >= 17 ? 'S' : 'H';
+    const why = rules.sur ? 'surrender už nelze' : 'surrender vypnutý';
+    return { action: fb, code: fb, cellId, desc: `Hard ${sum} proti ${dNorm} → ${ACTION_LABEL[fb]} (${why})` };
+  }
+  if (cell === 'D') {
+    return { action: canDouble ? 'D' : 'H', code: 'D', cellId, desc: `Hard ${sum} proti ${dNorm} → ${canDouble ? 'DOUBLE' : 'HIT (double nelze)'}` };
+  }
+  return { action: cell, code: cell, cellId, desc: `Hard ${sum} proti ${dNorm} → ${ACTION_LABEL[cell]}` };
+}
+
+// ==================== 3. REŽIM 1: DRIL STRATEGIE ====================
+const RANKS_POOL = ['2','3','4','5','6','7','8','9','10','A'];
+const TEN_DISPLAY = ['10','J','Q','K'];
+const displayRank = r => (r === '10' ? randPick(TEN_DISPLAY) : r);
+
+let activeDrill = null;
+let drillLocked = false;
+let drillNextTimer = null;
+let speedModeOn = false;
+let speedTimerInt = null;
+let forcedDrill = null;
+
+function toggleSpeedTimer() {
+  speedModeOn = !speedModeOn;
+  const btn = $('btn-speed-mode');
+  const wrap = $('drill-timer-wrap');
+  if (speedModeOn) {
+    btn.className = 'flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-amber-500/60 bg-amber-950/50 text-amber-300 transition';
+    wrap.classList.remove('hidden');
+    if (!drillLocked) startDrillCountdown();
+  } else {
+    btn.className = 'flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-bold border border-slate-800 bg-slate-900 text-slate-400 transition';
+    wrap.classList.add('hidden');
+    clearInterval(speedTimerInt);
+  }
+}
+
+function startDrillCountdown() {
+  clearInterval(speedTimerInt);
+  if (!speedModeOn || currentView !== 'drill') return;
+  const bar = $('drill-timer-bar');
+  const start = performance.now();
+  const duration = 3000;
+  bar.style.width = '100%';
+  speedTimerInt = setInterval(() => {
+    const pct = Math.max(0, 100 - ((performance.now() - start) / duration) * 100);
+    bar.style.width = pct + '%';
+    bar.className = 'h-full ' + (pct < 30 ? 'bg-rose-500' : 'bg-amber-400');
+    if (pct <= 0) {
+      clearInterval(speedTimerInt);
+      submitDrillAction('TIMEOUT');
+    }
+  }, 50);
+}
+
+function nextDrillHand() {
+  clearTimeout(drillNextTimer);
+  drillLocked = false;
+  const filter = $('drill-filter').value;
+  let p1, p2, dealer = randPick(RANKS_POOL);
+  let note = '';
+
+  if (forcedDrill) {
+    ({ p1, p2, dealer } = forcedDrill);
+    forcedDrill = null;
+  } else if (filter === 'MISTAKES') {
+    if (appStats.mistakesQueue.length > 0) {
+      const saved = randPick(appStats.mistakesQueue);
+      p1 = saved.p1; p2 = saved.p2; dealer = saved.dealer;
+      note = ` • zbývá ${appStats.mistakesQueue.length}`;
+    } else {
+      p1 = randPick(RANKS_POOL); p2 = randPick(RANKS_POOL);
+      if ((p1 === 'A' && p2 === '10') || (p1 === '10' && p2 === 'A')) p2 = '7';
+      note = ' • žádné chyby 🎉';
+    }
+  } else if (filter === 'PAIR') {
+    p1 = randPick(RANKS_POOL); p2 = p1;
+  } else if (filter === 'SOFT') {
+    p1 = 'A'; p2 = randPick(['2','3','4','5','6','7','8','9']);
+    if (Math.random() < 0.5) [p1, p2] = [p2, p1];
+  } else if (filter === 'HARD') {
+    const NON_A = ['2','3','4','5','6','7','8','9','10'];
+    // váha na zajímavé součty 8–17
+    do {
+      p1 = randPick(NON_A); p2 = randPick(NON_A);
+    } while (p1 === p2 || (cardValue(p1) + cardValue(p2) < 8 && Math.random() < 0.8));
+  } else {
+    p1 = randPick(RANKS_POOL); p2 = randPick(RANKS_POOL);
+    if ((p1 === 'A' && p2 === '10') || (p1 === '10' && p2 === 'A')) p2 = '7';
+  }
+
+  activeDrill = { p1, p2, dealer };
+  $('drill-dealer-card').innerHTML = renderCard(displayRank(dealer), randPick(SUIT_KEYS));
+  $('drill-player-cards').innerHTML =
+    renderCard(displayRank(p1), randPick(SUIT_KEYS)) + renderCard(displayRank(p2), randPick(SUIT_KEYS));
+
+  const isPair = normTen(p1) === normTen(p2);
+  const tag = isPair ? 'PAIR' : (p1 === 'A' || p2 === 'A' ? 'SOFT' : 'HARD');
+  $('drill-hand-tag').innerText = tag;
+  const { total, soft } = scoreRanks([p1, p2]);
+  $('drill-player-label').innerText = `Tvoje ruka: ${soft ? 'soft' : ''} ${total}${note}`;
+
+  const fb = $('drill-feedback');
+  fb.innerHTML = `<span class="text-emerald-200/70">Zvol optimální tah podle tabulky</span>`;
+  fb.className = 'w-full my-2 min-h-[46px] flex items-center justify-center px-3 py-1.5 rounded-xl text-xs font-semibold text-center bg-slate-950/35 border border-emerald-800/30';
+
+  if (speedModeOn) startDrillCountdown();
+}
+
+function submitDrillAction(userAct) {
+  if (!activeDrill || drillLocked) return;
+  drillLocked = true;
+  clearInterval(speedTimerInt);
+
+  const res = evaluateBasicStrategy([activeDrill.p1, activeDrill.p2], activeDrill.dealer,
+    { canDouble: true, canSplit: true, canSurrender: true });
+  appStats.stratTotal++;
+
+  if (!appStats.cellStats[res.cellId]) appStats.cellStats[res.cellId] = { ok: 0, fail: 0 };
+  const fb = $('drill-feedback');
+  const sameHand = m => m.p1 === activeDrill.p1 && m.p2 === activeDrill.p2 && m.dealer === activeDrill.dealer;
+
+  if (userAct === res.action) {
+    playTone(720, 'sine', 0.1);
+    appStats.stratCorrect++;
+    appStats.streak++;
+    appStats.bestStreak = Math.max(appStats.bestStreak, appStats.streak);
+    const bonus = appStats.streak > 0 && appStats.streak % 10 === 0 ? 50 : 0;
+    addXP(15 + bonus);
+    if (bonus) showToast(`🔥 Série ${appStats.streak}! +${bonus} XP bonus`);
+    appStats.cellStats[res.cellId].ok++;
+    appStats.mistakesQueue = appStats.mistakesQueue.filter(m => !sameHand(m));
+
+    fb.innerHTML = `
+      <div class="flex items-center space-x-2 text-emerald-300">
+        <svg class="w-4 h-4 shrink-0 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+        <span>Správně! ${res.desc}</span>
+      </div>`;
+    fb.className = 'w-full my-2 min-h-[46px] flex items-center justify-center px-3 py-1.5 rounded-xl text-xs font-bold text-center bg-emerald-950/90 border border-emerald-500/70';
+    saveAppState();
+    drillNextTimer = setTimeout(nextDrillHand, 650);
+  } else {
+    playTone(220, 'triangle', 0.16);
+    appStats.streak = 0;
+    appStats.cellStats[res.cellId].fail++;
+    if (!appStats.mistakesQueue.some(sameHand)) {
+      appStats.mistakesQueue.push({ ...activeDrill });
+      if (appStats.mistakesQueue.length > 40) appStats.mistakesQueue.shift();
+    }
+    fb.innerHTML = `
+      <div class="flex flex-col items-center space-y-1 text-rose-300">
+        <div class="flex items-center space-x-2">
+          <svg class="w-4 h-4 shrink-0 text-rose-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          <span>${userAct === 'TIMEOUT' ? 'Čas vypršel!' : 'Chyba!'} Správně: <u>${ACTION_LABEL[res.action]}</u></span>
+        </div>
+        <span class="text-rose-200/80 font-medium">${res.desc}</span>
+        <button onclick="nextDrillHand()" class="mt-1 px-3 py-1 rounded-md bg-rose-500/20 border border-rose-400/50 text-rose-100 text-[11px] font-bold">Další ruka →</button>
+      </div>`;
+    fb.className = 'w-full my-2 min-h-[46px] flex items-center justify-center px-3 py-1.5 rounded-xl text-xs font-bold text-center bg-rose-950/90 border border-rose-500/70';
+    shakeEl($('drill-felt'));
+    saveAppState();
+    drillNextTimer = setTimeout(nextDrillHand, 2600);
+  }
+}
+
+// ==================== 4. REŽIM 2: HI-LO AKADEMIE (3 MINIHRY) ====================
+let countMode = 'STREAM';
+let countInterval = null;
+let targetCountAnswer = 0;
+let countAwaitingAnswer = false;
+
+function switchCountMode(m) {
+  clearInterval(countInterval);
+  countMode = m;
+  countAwaitingAnswer = false;
+  ['STREAM','TABLE','SHOE'].forEach(k => {
+    $('tab-count-' + k).className = k === m
+      ? 'py-1.5 rounded-lg bg-slate-800 text-emerald-400 transition'
+      : 'py-1.5 rounded-lg text-slate-400 transition';
+  });
+  $('count-speed-row').style.display = m === 'STREAM' ? 'flex' : 'none';
+  $('count-length-row').style.display = m === 'STREAM' ? 'flex' : 'none';
+  $('count-hint-toggle-wrap').style.display = m === 'STREAM' ? 'flex' : 'none';
+  $('count-input-panel').classList.add('hidden');
+  $('count-feedback').innerText = '';
+  $('count-hint').innerText = '';
+  $('count-status-badge').innerText = 'Připraveno';
+  $('count-stage').innerHTML = `<span class="text-emerald-100/70 text-xs text-center px-4">Klikni na Spustit dril počítání</span>`;
+}
+
+function stopCountDrill() {
+  clearInterval(countInterval);
+}
+
+function showCountInput() {
+  countAwaitingAnswer = true;
+  $('count-input-panel').classList.remove('hidden');
+  const inp = $('count-user-val');
+  inp.value = '0';
+}
+
+function startSelectedCountDrill() {
+  clearInterval(countInterval);
+  countAwaitingAnswer = false;
+  $('count-input-panel').classList.add('hidden');
+  $('count-feedback').innerText = '';
+  $('count-user-val').value = '0';
+  $('count-hint').innerText = '';
+
+  const fullRanks = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+
+  if (countMode === 'STREAM') {
+    targetCountAnswer = 0;
+    let step = 0;
+    const total = parseInt($('count-length-slider').value, 10);
+    const speed = parseFloat($('count-speed-slider').value) * 1000;
+    $('count-question-label').innerText = 'Jaký je finální Running Count?';
+    $('count-stage').innerHTML = `<span class="text-emerald-200 font-bold text-sm">Připrav se…</span>`;
+    $('count-status-badge').innerText = `0/${total}`;
+
+    countInterval = setInterval(() => {
+      if (step >= total) {
+        clearInterval(countInterval);
+        $('count-stage').innerHTML = `<span class="text-emerald-300 font-bold text-sm">Konec série! Zadej výsledný součet.</span>`;
+        $('count-hint').innerText = '';
+        showCountInput();
+        return;
+      }
+      step++;
+      const r = randPick(fullRanks);
+      const val = getHiLoVal(r);
+      targetCountAnswer += val;
+      playTone(480, 'sine', 0.04);
+      $('count-status-badge').innerText = `Karta ${step}/${total}`;
+      $('count-stage').innerHTML = renderCard(r, randPick(SUIT_KEYS));
+      $('count-hint').innerText = $('count-show-hint').checked ? `Hodnota: ${fmtSigned(val)} • RC: ${fmtSigned(targetCountAnswer)}` : '';
+    }, speed);
+
+  } else if (countMode === 'TABLE') {
+    targetCountAnswer = 0;
+    let html = '';
+    for (let i = 0; i < 7; i++) {
+      const r = randPick(fullRanks);
+      targetCountAnswer += getHiLoVal(r);
+      html += renderCard(r, randPick(SUIT_KEYS), false, 'sm');
+    }
+    $('count-status-badge').innerText = '7 karet na stole';
+    $('count-stage').innerHTML = html;
+    $('count-hint').innerText = 'Tip: spáruj +1 a −1 karty, ty se vyruší';
+    $('count-question-label').innerText = 'Čistý Running Count těchto 7 karet:';
+    showCountInput();
+
+  } else if (countMode === 'SHOE') {
+    // Náhodné, ale vždy celočíselně dělitelné zadání
+    const decksRemaining = randPick([1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]);
+    const decksPlayed = 6 - decksRemaining;
+    let tcAnswer, rc;
+    do {
+      tcAnswer = randPick([-4, -3, -2, -1, 1, 2, 3, 4, 5]);
+      rc = tcAnswer * decksRemaining;
+    } while (!Number.isInteger(rc));
+    targetCountAnswer = tcAnswer;
+
+    const pctPlayed = Math.round((decksPlayed / 6) * 100);
+    const deckWord = n => (n === 1 ? 'balíček' : (Number.isInteger(n) && n < 5 ? 'balíčky' : 'balíčků'));
+    $('count-status-badge').innerText = '6-Deck Shoe';
+    $('count-stage').innerHTML = `
+      <div class="flex items-center space-x-5 bg-slate-950/75 px-5 py-3 rounded-xl border border-slate-800">
+        <div class="flex flex-col items-center">
+          <div class="w-12 h-24 border-2 border-slate-600 rounded bg-slate-900 flex flex-col justify-end p-0.5">
+            <div style="height:${pctPlayed}%" class="w-full bg-rose-600/80 rounded-sm"></div>
+          </div>
+          <span class="text-[10px] text-slate-400 mt-1">Discard tray</span>
+        </div>
+        <div class="text-left space-y-1">
+          <div class="text-xs text-slate-300">Running Count: <b class="font-mono-num text-emerald-400 text-sm">${fmtSigned(rc)}</b></div>
+          <div class="text-xs text-slate-300">Odehráno: <b>${decksPlayed} ${deckWord(decksPlayed)}</b></div>
+          <div class="text-[11px] text-amber-300">Zbývá v botě: <b>${decksRemaining} ${deckWord(decksRemaining)}</b></div>
+        </div>
+      </div>`;
+    $('count-hint').innerText = 'True Count = Running Count ÷ zbývající balíčky';
+    $('count-question-label').innerText = 'Jaký je True Count (TC)?';
+    showCountInput();
+  }
+}
+
+function stepCountInput(d) {
+  const el = $('count-user-val');
+  el.value = (parseInt(el.value, 10) || 0) + d;
+}
+
+function checkCountAnswer() {
+  if (!countAwaitingAnswer) return;
+  countAwaitingAnswer = false;
+  const raw = String($('count-user-val').value).replace('−', '-').trim();
+  const userVal = parseInt(raw, 10) || 0;
+  const fb = $('count-feedback');
+  appStats.countTotal++;
+
+  if (userVal === targetCountAnswer) {
+    playTone(740, 'sine', 0.12);
+    appStats.countCorrect++;
+    addXP(25);
+    fb.innerHTML = `<span class="text-emerald-400">Přesně tak! Správná hodnota je ${fmtSigned(targetCountAnswer)}. (+25 XP)</span>`;
+  } else {
+    playTone(220, 'triangle', 0.16);
+    fb.innerHTML = `<span class="text-rose-400">Chyba! Tvoje odpověď: ${fmtSigned(userVal)}, správně bylo: ${fmtSigned(targetCountAnswer)}.</span>`;
+  }
+  fb.innerHTML += `<button onclick="startSelectedCountDrill()" class="block mx-auto mt-2 px-3 py-1 rounded-md bg-slate-800 border border-slate-700 text-slate-200 text-[11px]">Znovu ↻</button>`;
+  $('count-input-panel').classList.add('hidden');
+  saveAppState();
+}
+
+// ==================== 5. REŽIM 3: PRO SIMULÁTOR ====================
+const NUM_DECKS = 6;
+const CUT_CARD = 78;  // reshuffle po dosažení ~75 % penetrace
+const MAX_HANDS = 4;
+const BASE_UNIT = 25;
+
+const savedGame = storageGet('bj_wiz_pro_game') || {};
+let shoeCards = [];
+let simRC = 0;
+let simHUDVisible = false;
+let simBank = Number.isFinite(savedGame.bank) ? savedGame.bank : 1000;
+let simSession = Number.isFinite(savedGame.session) ? savedGame.session : 0;
+let simBet = BASE_UNIT;
+let simDealer = [];
+let simHands = [];
+let activeHandIdx = 0;
+let roundInProgress = false;
+let holeCounted = false;
+let needsReshuffle = false;
+
+function saveGameState() {
+  storageSet('bj_wiz_pro_game', { bank: simBank, session: simSession });
+}
+
+function buildSixDeckShoe() {
+  shoeCards = [];
+  simRC = 0;
+  const ranks = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+  for (let d = 0; d < NUM_DECKS; d++) {
+    for (const s of SUIT_KEYS) {
+      for (const r of ranks) shoeCards.push({ r, s });
+    }
+  }
+  // Fisher–Yates (férové míchání)
+  for (let i = shoeCards.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shoeCards[i], shoeCards[j]] = [shoeCards[j], shoeCards[i]];
+  }
+  needsReshuffle = false;
+  $('game-shoe-left').innerText = shoeCards.length;
+  updateSimHUD();
+}
+
+function drawFromShoe(countCard = true) {
+  // Bota se nikdy nemíchá uprostřed kola — jen se nastaví příznak
+  if (shoeCards.length === 0) buildSixDeckShoe();
+  const card = shoeCards.pop();
+  if (shoeCards.length <= CUT_CARD) needsReshuffle = true;
+  if (countCard) simRC += getHiLoVal(card.r);
+  $('game-shoe-left').innerText = shoeCards.length;
+  updateSimHUD();
+  return card;
+}
+
+function calcHandScore(cards) {
+  return scoreRanks(cards.map(c => c.r)).total;
+}
+function isSoftHand(cards) {
+  const s = scoreRanks(cards.map(c => c.r));
+  return s.soft && s.total <= 21;
+}
+function isBlackjack(cards) {
+  return cards.length === 2 && calcHandScore(cards) === 21;
+}
+
+function getTrueCount() {
+  const decksLeft = Math.max(0.5, shoeCards.length / 52);
+  return Math.round((simRC / decksLeft) * 10) / 10;
+}
+
+function recommendedMultiplier() {
+  const tcFloor = Math.floor(getTrueCount());
+  if (tcFloor >= 5) return 10;
+  if (tcFloor === 4) return 8;
+  if (tcFloor === 3) return 4;
+  if (tcFloor === 2) return 2;
+  return 1;
+}
+
+function toggleGameHUD() {
+  simHUDVisible = !simHUDVisible;
+  updateSimHUD();
+}
+
+function updateSimHUD() {
+  const hud = $('game-hud-text');
+  const spreadBar = $('game-spread-bar');
+  if (!simHUDVisible) {
+    hud.innerText = 'RC: ? | TC: ?';
+    spreadBar.classList.add('hidden');
+    return;
+  }
+  const tc = getTrueCount();
+  hud.innerText = `RC: ${fmtSigned(simRC)} | TC: ${fmtSigned(tc)}`;
+  spreadBar.classList.remove('hidden');
+  const mult = recommendedMultiplier();
+  $('spread-tc-label').innerText = `TC ${fmtSigned(tc)}`;
+  $('spread-rec-label').innerText = `${mult}× (${mult * BASE_UNIT} $)`;
+}
+
+function updateMoneyUI() {
+  $('game-bank').innerText = simBank;
+  $('game-bet').innerText = simBet;
+  const s = $('game-session');
+  s.innerText = `${fmtSigned(simSession)} $`;
+  s.className = 'font-bold ' + (simSession > 0 ? 'text-emerald-300' : (simSession < 0 ? 'text-rose-300' : ''));
+}
+
+function applyRecommendedBet() {
+  if (roundInProgress) return;
+  simBet = Math.max(Math.min(simBank, BASE_UNIT), Math.min(simBank, recommendedMultiplier() * BASE_UNIT));
+  updateMoneyUI();
+}
+
+function addBet(val) {
+  if (roundInProgress) return;
+  if (simBank >= simBet + val) {
+    simBet += val;
+    playTone(560, 'sine', 0.04);
+  } else {
+    showToast('Nedostatek peněz v bankrollu');
+  }
+  updateMoneyUI();
+}
+
+function clearBet() {
+  if (roundInProgress) return;
+  simBet = Math.min(BASE_UNIT, simBank) || BASE_UNIT;
+  updateMoneyUI();
+}
+
+function resetBankroll() {
+  if (roundInProgress) return;
+  simBank = 1000;
+  simSession = 0;
+  simBet = BASE_UNIT;
+  buildSixDeckShoe();
+  saveGameState();
+  updateMoneyUI();
+  showToast('Bankroll obnoven na 1000 $ a bota zamíchána');
+}
+
+function startGameRound() {
+  if (roundInProgress) return;
+  if (simBank < BASE_UNIT) {
+    showToast('Bankroll došel — obnovuji na 1000 $');
+    simBank = 1000;
+    simSession = 0;
+  }
+  if (simBet > simBank) simBet = simBank;
+  if (needsReshuffle) {
+    buildSixDeckShoe();
+    showToast('Cut card — bota zamíchána, počítej od nuly');
+  }
+
+  simBank -= simBet;
+  updateMoneyUI();
+
+  // Pořadí rozdávání: hráč, dealer, hráč, dealer (hole card se nepočítá, dokud se neotočí)
+  const p1 = drawFromShoe(true);
+  const d1 = drawFromShoe(true);
+  const p2 = drawFromShoe(true);
+  const d2 = drawFromShoe(false);
+  simHands = [{ cards: [p1, p2], bet: simBet, surrendered: false, doubled: false, fromSplit: false, splitAces: false, done: false }];
+  simDealer = [d1, d2];
+  holeCounted = false;
+  activeHandIdx = 0;
+  roundInProgress = true;
+
+  const alertBox = $('game-coach-alert');
+  alertBox.innerHTML = '';
+  alertBox.classList.add('hidden');
+  $('game-bet-panel').classList.add('hidden');
+  $('game-action-panel').classList.remove('hidden');
+  playTone(400, 'sine', 0.05);
+
+  // Dealer peek (US pravidla): při A nebo 10 dealer zkontroluje blackjack
+  const dealerBJ = isBlackjack(simDealer);
+  const playerBJ = isBlackjack(simHands[0].cards);
+  if (dealerBJ || playerBJ) {
+    finishSimRound();
+    return;
+  }
+  renderSimTable(true);
+}
+
+function revealHoleCard() {
+  if (!holeCounted) {
+    simRC += getHiLoVal(simDealer[1].r);
+    holeCounted = true;
+    updateSimHUD();
+  }
+}
+
+function handCanDouble(hand) {
+  return hand.cards.length === 2 && !hand.splitAces && simBank >= hand.bet && (!hand.fromSplit || rules.das);
+}
+function handCanSplit(hand) {
+  return hand.cards.length === 2 && simHands.length < MAX_HANDS && !hand.splitAces &&
+         normTen(hand.cards[0].r) === normTen(hand.cards[1].r) && simBank >= hand.bet;
+}
+function handCanSurrender(hand) {
+  return rules.sur && simHands.length === 1 && hand.cards.length === 2 && !hand.fromSplit;
+}
+
+function renderSimTable(hideDealerHole) {
+  if (hideDealerHole) {
+    $('game-dealer-cards').innerHTML =
+      renderCard(simDealer[0].r, simDealer[0].s, false, 'sm') + renderCard('', '', true, 'sm');
+    $('game-dealer-total').innerText = cardValue(simDealer[0].r) === 11 ? 'A' : cardValue(simDealer[0].r);
+  } else {
+    $('game-dealer-cards').innerHTML = simDealer.map(c => renderCard(c.r, c.s, false, 'sm')).join('');
+    const ds = calcHandScore(simDealer);
+    $('game-dealer-total').innerText = isBlackjack(simDealer) ? 'Blackjack' : (ds > 21 ? `${ds} BUST` : ds);
+  }
+
+  const cardSize = simHands.length > 2 ? 'xs' : (simHands.length > 1 ? 'sm' : '');
+  $('game-player-hands-wrap').innerHTML = simHands.map((h, idx) => {
+    const isCurrent = roundInProgress && idx === activeHandIdx && simHands.length > 1;
+    const ringCls = isCurrent ? 'ring-2 ring-amber-400 bg-slate-950/50 p-1.5 rounded-xl' : 'p-1.5';
+    const score = calcHandScore(h.cards);
+    const scoreTxt = (isSoftHand(h.cards) && score < 21 ? 'soft ' : '') + score;
+    const status = h.result ? ` • <span class="${h.resultCls}">${h.result}</span>` : '';
+    return `
+      <div class="flex flex-col items-center ${ringCls} transition ${roundInProgress && idx !== activeHandIdx ? 'opacity-70' : ''}">
+        <div class="flex space-x-1 mb-1">
+          ${h.cards.map(c => renderCard(c.r, c.s, false, cardSize)).join('')}
+        </div>
+        <span class="text-[10px] font-bold uppercase text-emerald-200 text-center">
+          ${simHands.length > 1 ? `Ruka ${idx + 1} ` : ''}(${scoreTxt}) • ${h.bet}$${h.doubled ? ' ×2' : ''}${status}
+        </span>
+      </div>`;
+  }).join('');
+
+  const curHand = simHands[activeHandIdx];
+  if (curHand && roundInProgress) {
+    $('btn-game-split').disabled = !handCanSplit(curHand);
+    $('btn-game-double').disabled = !handCanDouble(curHand);
+    $('btn-game-sur').disabled = !handCanSurrender(curHand);
+  }
+}
+
+function playGameAction(act) {
+  if (!roundInProgress) return;
+  const hand = simHands[activeHandIdx];
+  const canSplit = handCanSplit(hand);
+  const canDouble = handCanDouble(hand);
+  const canSurrender = handCanSurrender(hand);
+
+  // Zakázané akce ignorujeme (např. z klávesnice), nezapočítávají se jako chyba
+  if ((act === 'P' && !canSplit) || (act === 'D' && !canDouble) || (act === 'SUR' && !canSurrender)) return;
+
+  const pRanks = hand.cards.map(c => c.r);
+  const evalRes = evaluateBasicStrategy(pRanks, simDealer[0].r, { canDouble, canSplit, canSurrender });
+
+  appStats.stratTotal++;
+  if (!appStats.cellStats[evalRes.cellId]) appStats.cellStats[evalRes.cellId] = { ok: 0, fail: 0 };
+  const alertBox = $('game-coach-alert');
+  if (act === evalRes.action) {
+    playTone(720, 'sine', 0.08);
+    appStats.stratCorrect++;
+    appStats.cellStats[evalRes.cellId].ok++;
+    addXP(10);
+    alertBox.innerHTML = `<span class="text-emerald-300">✓ ${evalRes.desc}</span>`;
+    alertBox.className = 'my-1.5 text-center text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-emerald-950/90 border border-emerald-600/70';
+  } else {
+    playTone(220, 'triangle', 0.14);
+    appStats.cellStats[evalRes.cellId].fail++;
+    alertBox.innerHTML = `<span class="text-rose-300">✗ Chyba! Tabulka velí ${ACTION_LABEL[evalRes.action]} — ${evalRes.desc}</span>`;
+    alertBox.className = 'my-1.5 text-center text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-rose-950/90 border border-rose-600/70';
+  }
+  alertBox.classList.remove('hidden');
+  saveAppState();
+
+  if (act === 'P') {
+    simBank -= hand.bet;
+    const aces = hand.cards[0].r === 'A';
+    const card2 = hand.cards.pop();
+    hand.cards.push(drawFromShoe(true));
+    hand.fromSplit = true;
+    hand.splitAces = aces;
+    const newHand = { cards: [card2, drawFromShoe(true)], bet: hand.bet, surrendered: false, doubled: false, fromSplit: true, splitAces: aces, done: false };
+    simHands.splice(activeHandIdx + 1, 0, newHand);
+    updateMoneyUI();
+    // Rozdělená esa dostanou jen jednu kartu
+    if (aces) {
+      hand.done = true;
+      newHand.done = true;
+      advanceOrFinishHand();
+      return;
+    }
+    renderSimTable(true);
+    if (calcHandScore(hand.cards) === 21) advanceOrFinishHand();
+    return;
+  }
+
+  if (act === 'SUR') {
+    hand.surrendered = true;
+    advanceOrFinishHand();
+    return;
+  }
+
+  if (act === 'D') {
+    simBank -= hand.bet;
+    hand.bet *= 2;
+    hand.doubled = true;
+    updateMoneyUI();
+    hand.cards.push(drawFromShoe(true));
+    advanceOrFinishHand();
+    return;
+  }
+
+  if (act === 'H') {
+    hand.cards.push(drawFromShoe(true));
+    renderSimTable(true);
+    if (calcHandScore(hand.cards) >= 21) advanceOrFinishHand();
+  } else if (act === 'S') {
+    advanceOrFinishHand();
+  }
+}
+
+function advanceOrFinishHand() {
+  simHands[activeHandIdx].done = true;
+  while (activeHandIdx + 1 < simHands.length) {
+    activeHandIdx++;
+    const h = simHands[activeHandIdx];
+    if (h.done) continue;
+    if (calcHandScore(h.cards) === 21) { h.done = true; continue; }
+    renderSimTable(true);
+    return;
+  }
+  finishSimRound();
+}
+
+function finishSimRound() {
+  roundInProgress = false;
+  revealHoleCard();
+
+  const dealerBJ = isBlackjack(simDealer);
+  const playerBJ = simHands.length === 1 && !simHands[0].fromSplit && isBlackjack(simHands[0].cards);
+
+  const anyAlive = simHands.some(h => !h.surrendered && calcHandScore(h.cards) <= 21);
+  if (anyAlive && !dealerBJ && !playerBJ) {
+    // H17: dealer táhne i na soft 17
+    while (calcHandScore(simDealer) < 17 || (calcHandScore(simDealer) === 17 && isSoftHand(simDealer))) {
+      simDealer.push(drawFromShoe(true));
+    }
+  }
+
+  const dScore = calcHandScore(simDealer);
+  let net = 0;
+  const summary = [];
+  let anyWin = false;
+
+  simHands.forEach((h, i) => {
+    const label = simHands.length > 1 ? `R${i + 1}: ` : '';
+    const pScore = calcHandScore(h.cards);
+    let payout = 0;
+    if (h.surrendered) {
+      payout = Math.floor(h.bet / 2);
+      h.result = 'Surrender'; h.resultCls = 'text-slate-300';
+    } else if (playerBJ && dealerBJ) {
+      payout = h.bet;
+      h.result = 'Push BJ'; h.resultCls = 'text-slate-200';
+    } else if (playerBJ) {
+      payout = h.bet + Math.floor(h.bet * 1.5);
+      h.result = 'BLACKJACK!'; h.resultCls = 'text-amber-300';
+      anyWin = true;
+    } else if (dealerBJ) {
+      payout = 0;
+      h.result = 'Dealer BJ'; h.resultCls = 'text-rose-300';
+    } else if (pScore > 21) {
+      h.result = 'Bust'; h.resultCls = 'text-rose-300';
+    } else if (dScore > 21 || pScore > dScore) {
+      payout = h.bet * 2;
+      h.result = 'Výhra'; h.resultCls = 'text-emerald-300';
+      anyWin = true;
+    } else if (pScore === dScore) {
+      payout = h.bet;
+      h.result = 'Push'; h.resultCls = 'text-slate-200';
+    } else {
+      h.result = 'Prohra'; h.resultCls = 'text-rose-300';
+    }
+    simBank += payout;
+    const handNet = payout - h.bet;
+    net += handNet;
+    summary.push(`${label}${h.result} ${handNet !== 0 ? fmtSigned(handNet) + '$' : ''}`.trim());
+  });
+
+  simSession += net;
+  appStats.rounds++;
+  saveAppState();
+  saveGameState();
+  renderSimTable(false);
+  updateMoneyUI();
+
+  if (anyWin) { playTone(660, 'sine', 0.08); setTimeout(() => playTone(990, 'sine', 0.12), 90); }
+  else if (net < 0) playTone(180, 'triangle', 0.15);
+
+  const alertBox = $('game-coach-alert');
+  if (!alertBox.innerHTML) alertBox.className = 'my-1.5 text-center text-[11px] font-bold px-2.5 py-1.5 rounded-lg bg-slate-950/85 border border-slate-800';
+  const netCls = net > 0 ? 'text-emerald-300' : (net < 0 ? 'text-rose-300' : 'text-slate-200');
+  alertBox.innerHTML += `<span class="text-white block mt-0.5">${summary.join(' | ')} • <b class="${netCls}">Celkem ${fmtSigned(net)} $</b></span>`;
+  alertBox.classList.remove('hidden');
+
+  if (simBet > simBank) simBet = Math.max(Math.min(simBank, BASE_UNIT), 0) || BASE_UNIT;
+  updateMoneyUI();
+
+  $('game-action-panel').classList.add('hidden');
+  $('game-bet-panel').classList.remove('hidden');
+}
+
+// ==================== 6. INTERAKTIVNÍ TABULKA & HEATMAPA ====================
+let currentTableType = 'HARD';
+let heatmapMode = false;
+
+function toggleHeatmap() {
+  heatmapMode = !heatmapMode;
+  $('btn-heatmap').className = heatmapMode
+    ? 'px-3 py-2 rounded-xl border border-amber-500/70 bg-amber-950/60 text-amber-300 text-xs font-bold flex items-center space-x-1'
+    : 'px-3 py-2 rounded-xl border border-slate-800 bg-slate-900 text-slate-300 text-xs font-bold flex items-center space-x-1';
+  renderStrategyTable(currentTableType);
+}
+
+// Z buňky tabulky vytvoří konkrétní ruku pro dril
+function practiceCell(type, row, dealer) {
+  let p1, p2;
+  if (type === 'PAIR') { p1 = row; p2 = row; }
+  else if (type === 'SOFT') { p1 = 'A'; p2 = String(row); }
+  else {
+    const total = parseInt(row, 10);
+    const combos = [];
+    for (let a = 2; a <= 10; a++) {
+      const b = total - a;
+      if (b >= 2 && b <= 10 && a !== b) combos.push([String(a), String(b)]);
+    }
+    [p1, p2] = randPick(combos);
+  }
+  forcedDrill = { p1, p2, dealer };
+  switchMainView('drill');
+}
+
+function renderStrategyTable(type) {
+  currentTableType = type;
+  ['HARD','SOFT','PAIR'].forEach(t => {
+    $('tab-tbl-' + t).className = t === type
+      ? 'flex-1 py-1.5 rounded-lg bg-slate-800 text-emerald-400'
+      : 'flex-1 py-1.5 rounded-lg text-slate-400';
+  });
+
+  let html = `<table class="w-full text-center text-[11px] border-collapse font-mono-num">
+    <thead><tr class="bg-slate-950 text-slate-300"><th class="p-1.5 border border-slate-800">Ruka</th>`;
+  DEALER_COLS.forEach(d => html += `<th class="p-1.5 border border-slate-800">${d}</th>`);
+  html += `</tr></thead><tbody>`;
+
+  const buildCell = (code, cellId, rowKey, dealer) => {
+    const disp = code === 'YN' ? 'Y/N' : code;
+    const click = `onclick="practiceCell('${type}','${rowKey}','${dealer}')"`;
+    if (heatmapMode) {
+      const rec = appStats.cellStats[cellId];
+      if (!rec || (rec.ok + rec.fail) === 0) {
+        return `<td ${click} class="cursor-pointer p-1.5 border border-slate-800 bg-slate-900 text-slate-500">${disp}</td>`;
+      }
+      const rate = Math.round((rec.ok / (rec.ok + rec.fail)) * 100);
+      const bg = rate >= 80 ? 'bg-emerald-600 text-white font-bold' : (rate >= 50 ? 'bg-amber-500 text-slate-950 font-bold' : 'bg-rose-600 text-white font-bold');
+      return `<td ${click} class="cursor-pointer p-1.5 border border-slate-800 ${bg}" title="Úspěšnost: ${rate}% (${rec.ok}/${rec.ok + rec.fail})">${rate}%</td>`;
+    }
+    return `<td ${click} class="cursor-pointer cell-${code} p-1.5 border border-slate-800/50">${disp}</td>`;
+  };
+
+  if (type === 'HARD') {
+    for (let r = 17; r >= 8; r--) {
+      const lbl = r === 17 ? '17+' : (r === 8 ? '5–8' : r);
+      html += `<tr><td class="bg-slate-950 font-extrabold p-1.5 border border-slate-800 text-slate-200">${lbl}</td>`;
+      HARD_CHART[r].forEach((code, idx) => html += buildCell(code, `HARD_${r}_${DEALER_COLS[idx]}`, r, DEALER_COLS[idx]));
+      html += `</tr>`;
+    }
+  } else if (type === 'SOFT') {
+    for (let r = 9; r >= 2; r--) {
+      html += `<tr><td class="bg-slate-950 font-extrabold p-1.5 border border-slate-800 text-slate-200">A,${r}</td>`;
+      SOFT_CHART[r].forEach((code, idx) => html += buildCell(code, `SOFT_${r}_${DEALER_COLS[idx]}`, r, DEALER_COLS[idx]));
+      html += `</tr>`;
+    }
+  } else {
+    ['A','10','9','8','7','6','5','4','3','2'].forEach(k => {
+      const lbl = k === '10' ? 'T,T' : `${k},${k}`;
+      html += `<tr><td class="bg-slate-950 font-extrabold p-1.5 border border-slate-800 text-slate-200">${lbl}</td>`;
+      PAIR_CHART[k].forEach((code, idx) => html += buildCell(code, `PAIR_${k}_${DEALER_COLS[idx]}`, k, DEALER_COLS[idx]));
+      html += `</tr>`;
+    });
+  }
+
+  html += `</tbody></table>`;
+  $('strategy-table-container').innerHTML = html;
+}
+
+// ==================== 7. NAVIGACE & STATISTIKY ====================
+let currentView = 'drill';
+
+function refreshHeaderAndStats() {
+  const lvl = Math.floor(appStats.xp / 200) + 1;
+  $('header-level').innerText = lvl;
+  $('header-xp').innerText = `${appStats.xp} XP`;
+  $('header-xp-bar').style.width = ((appStats.xp % 200) / 2) + '%';
+  $('drill-streak').innerText = appStats.streak;
+  $('drill-best').innerText = appStats.bestStreak;
+
+  const sRate = appStats.stratTotal ? Math.round((appStats.stratCorrect / appStats.stratTotal) * 100) + '%' : '—';
+  const cRate = appStats.countTotal ? Math.round((appStats.countCorrect / appStats.countTotal) * 100) + '%' : '—';
+
+  $('stat-total-hands').innerText = appStats.stratTotal;
+  $('stat-strat-rate').innerText = sRate;
+  $('stat-count-rate').innerText = cRate;
+  $('stat-best-streak').innerText = appStats.bestStreak;
+  $('stat-rounds').innerText = appStats.rounds;
+  $('stat-mistakes').innerText = appStats.mistakesQueue.length;
+}
+
+function resetAllStats() {
+  if (!confirm('Opravdu vynulovat všechny statistiky, XP a frontu chyb?')) return;
+  appStats = DEFAULT_STATS();
+  saveAppState();
+  renderStrategyTable(currentTableType);
+}
+
+function switchMainView(view) {
+  ['drill','count','game','chart'].forEach(v => {
+    const sec = $('view-' + v);
+    sec.classList.add('hidden');
+    sec.classList.remove('flex');
+    $('nav-btn-' + v).className = 'py-2.5 flex flex-col items-center space-y-1 text-slate-400';
+  });
+  const target = $('view-' + view);
+  target.classList.remove('hidden');
+  if (view !== 'chart') target.classList.add('flex');
+  $('nav-btn-' + view).className = 'py-2.5 flex flex-col items-center space-y-1 text-emerald-400';
+
+  const prev = currentView;
+  currentView = view;
+
+  // Zastavit běžící timery v opouštěných sekcích
+  if (view !== 'drill') clearInterval(speedTimerInt);
+  if (view !== 'count' && prev === 'count') stopCountDrill();
+
+  if (view === 'chart') renderStrategyTable(currentTableType);
+  if (view === 'drill') {
+    if (forcedDrill || drillLocked) nextDrillHand();
+    else if (speedModeOn) startDrillCountdown();
+  }
+}
+
+// ==================== 8. KLÁVESOVÉ ZKRATKY ====================
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const tag = (e.target && e.target.tagName) || '';
+  const k = e.key.toLowerCase();
+
+  if (currentView === 'count') {
+    if (e.key === 'Enter') { e.preventDefault(); checkCountAnswer(); }
+    else if (e.key === 'ArrowUp' && tag !== 'SELECT') { e.preventDefault(); stepCountInput(1); }
+    else if (e.key === 'ArrowDown' && tag !== 'SELECT') { e.preventDefault(); stepCountInput(-1); }
+    return;
+  }
+  if (tag === 'INPUT' || tag === 'SELECT') return;
+
+  const map = { h: 'H', s: 'S', d: 'D', p: 'P', y: 'P', r: 'SUR' };
+  if (currentView === 'drill') {
+    if (map[k]) submitDrillAction(map[k]);
+    else if ((e.key === ' ' || e.key === 'Enter') && drillLocked) { e.preventDefault(); nextDrillHand(); }
+  } else if (currentView === 'game') {
+    if (roundInProgress && map[k]) playGameAction(map[k]);
+    else if (!roundInProgress && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); startGameRound(); }
+  }
+});
+
+// ==================== START ====================
+renderSoundIcon();
+renderRuleButtons();
+buildSixDeckShoe();
+updateMoneyUI();
+switchCountMode('STREAM');
+nextDrillHand();
+renderStrategyTable('HARD');
+refreshHeaderAndStats();
+</script>
+</body>
+</html>
