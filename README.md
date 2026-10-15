@@ -1,13 +1,17 @@
-# BJ Wiz PRO — Blackjack & Hi-Lo Trainer
+# BJ Wiz PRO — Blackjack & Card Counting Trainer
 
-Mobilní trenažér základní strategie blackjacku a počítání karet Hi-Lo. Jeden soubor `index.html`, bez instalace.
+Mobilní trenažér blackjacku a počítání karet. Jeden soubor `index.html`, bez instalace a bez knihoven. Funguje jako aplikace na ploše telefonu (PWA).
 
-**Spuštění:** otevři `index.html` v prohlížeči, nebo online přes GitHub Pages / odkaz v popisu repozitáře.
+**Hra online:** https://stepanvcelak11.github.io/Blackjakcktranink/
 
 ## Režimy
-- **Dril tabulky** – flashcards se základní strategií (filtry Hard/Soft/Páry, opakování chyb, 3s timer).
-- **Hi-Lo počty** – pás karet, stůl se 7 kartami, převod Running → True Count.
-- **PRO hra** – simulátor 6 balíčků (H17, peek, BJ 3:2, DAS, late surrender, split až do 4 rukou) s koučem a HUD s počtem.
-- **Tabulka** – strategie + heatmapa úspěšnosti; klik na buňku ji procvičí v drilu.
+- **Hrát** – realistický stůl s botou, žetony a animacemi. Pojištění / even money, split až do 4 rukou, double, surrender. Poradce (💡 Rada) radí sázku i tah, ověření countu během hry.
+- **Strategie** – dril základní strategie (Hard / Soft / Páry / Moje chyby / Indexy I18), 3s timer, série.
+- **Počítání** – flash karty (rychlost, počet, 1–3 karty najednou), stůl, převod na True Count, odpočet balíčku na čas.
+- **Výzvy** – 42 výzev s XP a úrovněmi.
+- **Více** – tabulka strategie generovaná podle pravidel + heatmapa úspěšnosti, indexy, statistiky, AI simulace (až 100 000 kol, graf bankrollu, EV, SD, propad).
 
-Klávesy: `H` hit, `S` stand, `D` double, `P` split, `R` surrender, `Enter` deal / potvrdit.
+## Nastavení (⚙️)
+Počet balíčků (4/6/8), H17/S17, výplata BJ 3:2 / 6:5, DAS, late surrender, penetrace, minimální sázka. Počítací systémy Hi-Lo, KO, Hi-Opt I, Omega II, Zen. Indexy Illustrious 18 + Fab 4, rychlost rozdávání, zvuky, vibrace.
+
+Klávesy: `H` hit, `S` stand, `D` double, `P` split, `R` surrender, `Y/N` pojištění, `I` rada, `Enter` rozdat / potvrdit.
