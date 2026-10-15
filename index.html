@@ -264,34 +264,57 @@ input,select{font:inherit;color:inherit}
 .opt.ok{border-color:var(--green);background:var(--green-bg)}.opt.bad{border-color:var(--red);background:var(--red-bg)}
 
 /* ---------- LEARN ---------- */
-.lprog{display:flex;gap:8px;margin:0 0 22px}
-.lprog div{height:4px;border-radius:2px;background:var(--card3);overflow:hidden}
-.lprog i{display:block;height:100%;background:var(--lime)}
-.lsec{display:flex;gap:16px;align-items:flex-start;background:var(--card);border:1px solid var(--hair);border-radius:18px;padding:22px 20px;margin-bottom:10px}
-.lsec .ico{width:52px;height:52px;border-radius:14px;background:var(--card2);display:grid;place-items:center;flex:none;margin-top:4px}
-.lsec .ico svg{width:24px;height:24px;fill:var(--muted)}
-.lsec.cur .ico svg{fill:var(--lime)}
-.lsec .lbl{font-size:12.5px;font-weight:800;letter-spacing:.14em;color:var(--ink2)}
-.lsec.cur .lbl{color:var(--lime)}
-.lsec h3{margin:4px 0 6px;font-family:var(--display);font-size:20px;font-weight:700;letter-spacing:-.02em}
-.lsec p{margin:0;color:var(--ink2);font-size:14.5px;line-height:1.5}
-.lsec .cnt{margin-left:auto;font-weight:800;font-size:22px;white-space:nowrap}
-.lsec .cnt small{font-size:14px;color:var(--ink2);font-weight:600}
-.path{position:relative;margin:0 0 30px}
-.path svg.dots{position:absolute;left:0;top:0;pointer-events:none}
-.node{position:absolute;width:76px;height:76px;transform:translate(-50%,-50%);border-radius:24px;display:grid;place-items:center;
-  background:var(--card);border:1px solid var(--line);font-family:var(--display);font-size:26px;font-weight:700;color:var(--muted)}
-.node.done{background:var(--acc-bg);border-color:rgba(157,140,255,.35);color:var(--lime2)}
-.node.cur{width:104px;height:104px;border-radius:32px;border:0;background:linear-gradient(140deg,var(--lime2),var(--lime-d));color:#0c0b18;box-shadow:0 0 0 8px rgba(157,140,255,.1),0 18px 50px -12px rgba(157,140,255,.6)}
-.node svg{width:36px;height:36px;fill:#0c0b18;position:relative}
-.nlab{position:absolute;transform:translateY(-50%);max-width:58%}
-.nlab b{display:block;font-size:18px;font-weight:700;line-height:1.3}
-.nlab span{color:var(--ink2);font-size:14.5px}
-.nlab.c{text-align:center;transform:translate(-50%,0);max-width:84%;width:max-content}
-.starttag{position:absolute;transform:translate(-50%,-100%);padding:8px 16px;border-radius:9px;background:var(--ink);color:#0c0b18;font-weight:800;font-size:12px;letter-spacing:.16em}
-.starttag::after{content:"";position:absolute;left:50%;bottom:-5px;transform:translateX(-50%) rotate(45deg);width:10px;height:10px;background:var(--ink)}
-.pathend{position:absolute;transform:translate(-50%,-50%);width:120px;height:46px;border-radius:16px;border:1px dashed var(--line)}
-.pathend-t{position:absolute;transform:translateX(-50%);color:var(--ink2);font-size:14.5px;white-space:nowrap}
+/* ---------- COACH ---------- */
+.cbub{display:flex;gap:12px;align-items:flex-start}
+.orb{width:44px;height:44px;border-radius:14px;flex:none;display:grid;place-items:center;background:linear-gradient(140deg,var(--lime2),var(--lime-d));box-shadow:0 8px 24px -8px rgba(157,140,255,.7)}
+.orb svg{width:20px;height:20px;fill:#0c0b18}
+.orb.sm{width:36px;height:36px;border-radius:11px}.orb.sm svg{width:16px;height:16px}
+.cmsg{flex:1;min-width:0;background:var(--card);border:1px solid var(--hair);border-radius:4px 16px 16px 16px;padding:14px 15px;font-size:15px;line-height:1.55;color:#d9dce6;text-align:left}
+.cmsg b{color:var(--ink)}
+.dprog{height:4px;border-radius:2px;background:var(--card3);overflow:hidden;margin:-4px 0 16px}
+.dprog i{display:block;height:100%;background:var(--lime);transition:width .4s}
+.plan{position:relative;margin-bottom:18px}
+.plan::before{content:"";position:absolute;left:21px;top:24px;bottom:24px;width:2px;background:var(--line)}
+.pstep{position:relative;display:flex;gap:14px;padding:6px 0 14px;cursor:pointer}
+.pdot{position:relative;z-index:1;width:44px;height:44px;border-radius:14px;flex:none;display:grid;place-items:center;font-size:19px;background:var(--card);border:1px solid var(--line)}
+.pstep.done .pdot{background:var(--green-bg);border-color:rgba(63,207,142,.35);color:var(--green);font-weight:800}
+.pstep.cur .pdot{background:var(--acc-bg);border-color:var(--lime);box-shadow:0 0 0 5px rgba(157,140,255,.12)}
+.pbody{flex:1;min-width:0;padding-top:2px}
+.pk{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.pstep.cur .pk{color:var(--lime2)}
+.pt{font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:-.02em;margin-top:2px}
+.pstep.done .pt{color:var(--ink2);text-decoration:line-through;text-decoration-color:var(--muted)}
+.pd{color:var(--ink2);font-size:14px;line-height:1.45;margin-top:3px}
+.pstep.done .pd{display:none}
+.pgo{margin-top:12px;padding:13px;font-size:16px}
+.chat{padding:14px}
+.msgs{display:flex;flex-direction:column;gap:8px;max-height:340px;overflow-y:auto;padding-bottom:4px;-webkit-user-select:text;user-select:text}
+.msg{max-width:88%;padding:10px 13px;border-radius:14px;font-size:14.5px;line-height:1.5}
+.msg.c{align-self:flex-start;background:var(--card2);border-top-left-radius:4px;color:#d9dce6}
+.msg.c b{color:var(--ink)}
+.msg.me{align-self:flex-end;background:var(--lime);color:#0c0b18;font-weight:600;border-top-right-radius:4px}
+.chips2{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:12px -14px 10px;padding:0 14px}
+.chips2::-webkit-scrollbar{display:none}
+.chips2 button{flex:none;padding:8px 12px;border-radius:10px;border:1px solid var(--line);color:var(--ink2);font-size:13px;font-weight:700;white-space:nowrap}
+.ask{display:flex;gap:8px}
+.ask input{flex:1;min-width:0;height:48px;border-radius:14px;border:1px solid var(--line);background:var(--bg);padding:0 14px;font-size:16px;outline:none;-webkit-user-select:text;user-select:text}
+.ask input:focus{border-color:var(--lime)}
+.ask .btn{width:48px;height:48px;padding:0;flex:none;font-size:20px}
+.sk{margin-bottom:12px}.sk:last-of-type{margin-bottom:0}
+.skn{display:flex;justify-content:space-between;font-weight:700;font-size:14.5px;margin-bottom:6px}
+.pat{padding:10px 0;border-top:1px solid var(--line)}
+.nstep{width:100%;text-align:left;padding:14px 16px;border-color:rgba(157,140,255,.25)}
+.lib{padding:0;overflow:hidden}
+.lib summary{list-style:none;display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer}
+.lib summary::-webkit-details-marker{display:none}
+.lib .ico{width:42px;height:42px;border-radius:12px;background:var(--card2);display:grid;place-items:center;flex:none}
+.lib .ico svg{width:20px;height:20px;fill:var(--lime)}
+.lib .t{font-weight:700;font-size:16px}
+.lib .chev{transition:transform .2s}
+.lib[open] .chev{transform:rotate(90deg)}
+.lrow{display:flex;align-items:center;gap:12px;width:100%;padding:12px 18px;border-top:1px solid var(--line);text-align:left;font-weight:600;font-size:15px}
+.ln{width:28px;height:28px;border-radius:9px;background:var(--card2);display:grid;place-items:center;font-size:12px;font-weight:800;color:var(--ink2);flex:none}
+.ln.ok{background:var(--green-bg);color:var(--green)}
 
 /* ---------- CHARTS ---------- */
 .bars{display:flex;align-items:flex-end;gap:10px;height:190px;margin-top:20px}
@@ -376,7 +399,7 @@ table.chart td.rh{color:var(--ink);background:none;cursor:default;white-space:no
     <button data-v="drills" onclick="showView('drills')"><svg viewBox="0 0 24 24"><rect x="3.5" y="5" width="11" height="15" rx="2.5" transform="rotate(-10 9 12.5)"/><rect x="9" y="4" width="11" height="15" rx="2.5" transform="rotate(8 14.5 11.5)"/><path class="keep" d="M16.4 10.1c-.6-.8-1.9-.7-2.4.2-.3-1-1.6-1.3-2.3-.5-.7.8-.4 1.9.3 2.6l1.8 1.6 1.9-1.4c.8-.6 1.3-1.6.7-2.5z"/></svg>Drily</button>
     <button data-v="train" onclick="showView('train')"><svg viewBox="0 0 24 24"><path d="M5 20V10.5a7 7 0 0 1 14 0V20z"/><path class="keep" d="M9.5 15.3c1.4 1.3 3.6 1.3 5 0"/></svg>Trénink</button>
     <button data-v="play" onclick="showView('play')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path class="keep" d="M10 8.5v7l5.5-3.5z"/></svg>Hrát</button>
-    <button data-v="learn" onclick="showView('learn')"><svg viewBox="0 0 24 24"><path d="M2 9.5 12 5l10 4.5L12 14z"/><path d="M6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5l-6 2.6z"/></svg>Učení</button>
+    <button data-v="learn" onclick="showView('learn')"><svg viewBox="0 0 24 24"><path d="M12 3.5l1.9 4.6 4.6 1.9-4.6 1.9L12 16.5l-1.9-4.6L5.5 10l4.6-1.9z"/><path d="M18.5 15.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>Kouč</button>
     <button data-v="stats" onclick="showView('stats')"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><path class="keep" d="M7.5 17v-2.5M12 17v-4.5M16.5 17v-6.5M7 11l4-3.5 2.5 2L17 6.5"/></svg>Statistiky</button>
   </nav>
 
@@ -447,7 +470,8 @@ const DEFAULT_STATS = () => ({
   cells: {}, dec: { n: 0, ok: 0, streak: 0, best: 0, dev: 0 }, days: {},
   count: { cv: [], rc: [], tc: [], daily: [], checks: { n: 0, ok: 0 }, systems: [] },
   game: { rounds: 0, hands: 0, wins: 0, bj: 0, splitWin: 0, doubleWin: 0, winStreak: 0, winStreakMax: 0, maxBank: 1000, insN: 0, insOk: 0, devOk: 0 },
-  sim: { rounds: 0 }, lessons: [], done: []
+  sim: { rounds: 0 }, lessons: [], done: [],
+  coach: { plan: null, chat: [], wrong: {}, table: { day: '', n: 0 } }
 });
 function mergeDeep(base, extra) {
   for (const k in extra) {
@@ -750,12 +774,15 @@ function ratingDelta(ok, n) {
   return Math.round(160 * (acc - exp)) + (acc === 1 ? 10 : 0);
 }
 function weekGain() { const cut = Date.now() - 7 * 864e5; return stats.sessions.filter(s => s.t >= cut).reduce((a, s) => a + s.delta, 0); }
-function recordDecision(cellId, ok, dev) {
+function recordDecision(cellId, ok, dev, chosen, correct) {
   const d = stats.dec, t = today();
   d.n++; t.n++;
-  if (!stats.cells[cellId]) stats.cells[cellId] = { ok: 0, fail: 0 };
-  if (ok) { d.ok++; t.ok++; d.streak++; d.best = Math.max(d.best, d.streak); stats.cells[cellId].ok++; if (dev) d.dev++; }
-  else { d.streak = 0; stats.cells[cellId].fail++; }
+  const c = stats.cells[cellId] || (stats.cells[cellId] = { ok: 0, fail: 0 });
+  if (ok) { d.ok++; t.ok++; d.streak++; d.best = Math.max(d.best, d.streak); c.ok++; c.st = (c.st || 0) + 1; if (dev) d.dev++; }
+  else {
+    d.streak = 0; c.fail++; c.st = 0; c.t = Date.now();
+    if (chosen && correct) { const k = correct + '>' + chosen, w = stats.coach.wrong; w[k] = (w[k] || 0) + 1; }
+  }
 }
 function parseCell(id) { const [type, row, dealer] = id.split('_'); return { type, row, dealer }; }
 function cellName(id) {
@@ -841,7 +868,7 @@ function handForSkill(skill) {
       const [a, b] = dv.pair ? ['10', '10'] : handForTotal(dv.total);
       return { p1: a, p2: b, dealer: dv.up, tc: devIdx(dv) + rand([-3, -2, -1, -1, 0, 0, 1, 1, 2, 3]) };
     }
-    default: { const ls = leaks(8); return (ls.length && Math.random() < .45) ? cellToHand(rand(ls).id) : randomHand(); }
+    default: { const ls = weakCells(8); return (ls.length && Math.random() < .45) ? cellToHand(rand(ls).id) : randomHand(); }
   }
 }
 
@@ -851,14 +878,14 @@ function handForSkill(skill) {
 let sess = null, cnt = null, cntTimer = null, lesson = null;
 function startSession(o) {
   const hands = [];
-  for (let i = 0; i < 10; i++) hands.push(o.focus && i % 2 === 0 ? cellToHand(o.focus) : handForSkill(o.skill || 'mix'));
+  for (let i = 0; i < 10; i++) hands.push(o.cells && i < 7 ? cellToHand(o.cells[i % o.cells.length]) : o.focus && i % 2 === 0 ? cellToHand(o.focus) : handForSkill(o.skill || 'mix'));
   for (let i = hands.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [hands[i], hands[j]] = [hands[j], hands[i]]; }
   cnt = null; lesson = null;
   sess = { ...o, hands, i: 0, res: [], locked: false };
   $('overlay').classList.remove('hidden');
   renderSession();
 }
-function closeOverlay() { clearInterval(cntTimer); $('overlay').classList.add('hidden'); $('overlay').innerHTML = ''; sess = null; cnt = null; lesson = null; refreshView(); }
+function closeOverlay() { coachPending = null; clearInterval(cntTimer); $('overlay').classList.add('hidden'); $('overlay').innerHTML = ''; sess = null; cnt = null; lesson = null; refreshView(); }
 function renderSession() {
   const s = sess, h = s.hands[s.i];
   h.cards = h.cards || [mkCard(showRank(h.p1)), mkCard(showRank(h.p2))];
@@ -890,7 +917,7 @@ function sessAnswer(a) {
   const h = s.hands[s.i];
   const r = decide([h.p1, h.p2], h.dealer, { canDouble: true, canSplit: true, canSurrender: true, tc: h.tc, devs: h.tc != null });
   const ok = a === r.action;
-  recordDecision(r.cellId, ok, !!r.deviation);
+  recordDecision(r.cellId, ok, !!r.deviation, a, r.action);
   s.res.push({ ok, h, r, a });
   const fb = $('s-fb');
   if (ok) { sfx.ok(); fb.className = 'fb ok'; fb.innerHTML = `✓ ${r.desc}`; setTimeout(sessNext, 750); }
@@ -913,10 +940,11 @@ function finishSession() {
   stats.ratingHist.push({ t: Date.now(), r: stats.rating }); if (stats.ratingHist.length > 200) stats.ratingHist.shift();
   stats.sessions.unshift({ t: Date.now(), title: s.title, skill: s.skill || 'mix', n, ok, delta }); if (stats.sessions.length > 200) stats.sessions.pop();
   const t = today(); t.drills++; t.delta += delta;
+  if (coachPending != null) { coachDone(coachPending); coachPending = null; }
   saveStats();
   const p = pct(ok, n), col = p >= 80 ? 'var(--green)' : p >= 60 ? 'var(--lime)' : 'var(--red)', wrong = s.res.filter(x => !x.ok);
   if (p === 100) sfx.win();
-  sess.again = { title: s.title, skill: s.skill, focus: s.focus };
+  sess.again = { title: s.title, skill: s.skill, focus: s.focus, cells: s.cells };
   $('overlay').innerHTML = `
     <div class="ovtop"><button class="xbtn" onclick="closeOverlay()">✕</button></div>
     <div class="summary">
@@ -926,6 +954,7 @@ function finishSession() {
       <div class="note">Nový rating ${stats.rating} · ${rankTitle(stats.rating)}</div>
     </div>
     ${wrong.length ? `<div class="box tight"><div class="cap" style="padding-top:16px">Chyby k zapamatování</div>${wrong.map(x => `<div class="row"><div class="grow"><div class="t">${cellName(x.r.cellId)}${x.h.tc != null ? ` · TC ${sgn(x.h.tc)}` : ''}</div><div class="d">Tvůj tah ${LABEL[x.a]} · správně <b style="color:var(--ink)">${LABEL[x.r.action]}</b></div></div></div>`).join('')}</div>` : `<div class="box" style="text-align:center"><div style="font-size:30px">🎯</div><div style="font-weight:800;margin-top:6px">Perfektní sada!</div></div>`}
+    <div class="cbub" style="margin-bottom:14px"><div class="orb sm">${ICON.spade}</div><div class="cmsg">${md(coachAfterSession(s))}</div></div>
     <div class="grow-fill"></div>
     <button class="btn btn-lime" onclick="startSession(sess.again)">Další sada</button>
     <button class="btn btn-dark" style="margin-top:10px" onclick="closeOverlay()">Hotovo</button>`;
@@ -951,6 +980,7 @@ function renderTrain() {
   const lk = leaks(1)[0], gain = weekGain();
   $('view-train').innerHTML = `
     <div class="hdr"><h1>Trénink</h1>${headerPills()}</div>
+    ${nextStepCard()}
     ${weak ? `<button class="box row" style="width:100%;text-align:left;padding:16px 18px;border:0" onclick="startSession({title:'${weak.name}',skill:'${weak.id}'})">${cardsMini(weak.cards)}<div class="grow"><div class="cap" style="font-size:12px">Nejslabší dovednost</div><div class="t" style="font-size:19px;margin-top:2px">${weak.name}</div><div class="d"><b class="${weak.p >= 70 ? 'g' : 'r'}">${weak.p} %</b> správně z ${weak.n} rukou</div></div><span class="chev">›</span></button>`
       : `<div class="box"><div class="cap">Vítej v tréninku</div><div class="note" style="margin-top:8px;font-size:15px">Odehraj pár sad po 10 rukách. Pak ti ukážu, kde ztrácíš nejvíc, a rating poroste.</div></div>`}
     <div class="divider"></div>
@@ -1146,6 +1176,7 @@ function tcNext() {
 function countSummary(p, l1, l2, pass, kind) {
   const col = pass ? 'var(--green)' : p >= 50 ? 'var(--lime)' : 'var(--red)';
   cnt = { kind: 'done' };
+  if (coachPending != null) { coachDone(coachPending); coachPending = null; }
   $('overlay').innerHTML = `<div class="ovtop"><button class="xbtn" onclick="closeOverlay()">✕</button></div>
     <div class="summary"><div class="ring" style="--p:${p};--c:${col}"><div><b>${p}%</b><span>PŘESNOST</span></div></div>
     <div style="font-size:24px;font-weight:800;margin-top:14px">${l1}</div><div class="note" style="font-size:15px">${l2}</div></div>
@@ -1242,7 +1273,8 @@ function gradeDecision(h, a, c) {
   const tc = online() ? null : curTC();
   const r = decide(h.cards.map(x => x.r), game.dealer[0].r, { canDouble: c.double, canSplit: c.split, canSurrender: c.sur, tc, devs: !online() && devsOn() });
   const ok = a === r.action;
-  recordDecision(r.cellId, ok, !!r.deviation);
+  recordDecision(r.cellId, ok, !!r.deviation, a, r.action);
+  const tb = stats.coach.table; if (tb.day !== dayKey()) { tb.day = dayKey(); tb.n = 0; } tb.n++;
   game.sess.dec++; if (ok) game.sess.ok++;
   if (ok && r.deviation) stats.game.devOk++;
   ok ? sfx.ok() : sfx.bad();
@@ -1750,47 +1782,6 @@ const SECTIONS = [
 ];
 const LESSONS = SECTIONS.flatMap((s, si) => s.lessons.map(l => ({ ...l, sec: si })));
 LESSONS.forEach((l, i) => { l.id = i; });
-function renderLearn() {
-  const done = stats.lessons.length, next = LESSONS.find(l => !stats.lessons.includes(l.id));
-  let html = `<div class="hdr" style="margin-bottom:8px"><div><h1>Učení</h1><div class="note" style="font-size:15px;margin-top:10px">${done} z ${LESSONS.length} lekcí hotovo</div></div><div class="rbtn" style="width:56px;height:56px"><svg viewBox="0 0 24 24" style="fill:var(--lime)"><path d="M2 9.5 12 5l10 4.5L12 14zM6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5l-6 2.7z"/></svg></div></div>
-    <div class="lprog">${SECTIONS.map((s, si) => { const ls = LESSONS.filter(l => l.sec === si), d = ls.filter(l => stats.lessons.includes(l.id)).length; return `<div style="flex:${ls.length}"><i style="width:${d / ls.length * 100}%"></i></div>`; }).join('')}</div>`;
-  SECTIONS.forEach((s, si) => {
-    const ls = LESSONS.filter(l => l.sec === si), d = ls.filter(l => stats.lessons.includes(l.id)).length, cur = next && next.sec === si;
-    html += `<div class="lsec${cur ? ' cur' : ''}"><div class="ico">${suitSvg(s.icon)}</div><div style="flex:1;min-width:0"><div class="lbl">SEKCE ${si + 1}</div><h3>${s.title}</h3><p>${s.desc}</p></div><div class="cnt">${d} <small>z ${ls.length}</small></div></div>
-      <div class="path" id="path-${si}"></div>`;
-  });
-  $('view-learn').innerHTML = html;
-  SECTIONS.forEach((_, si) => drawPath(si));
-}
-function drawPath(si) {
-  const el = $('path-' + si); if (!el) return;
-  const W = el.clientWidth || 340, ls = LESSONS.filter(l => l.sec === si), next = LESSONS.find(l => !stats.lessons.includes(l.id));
-  const pos = []; let y = 76;
-  ls.forEach((l, i) => {
-    const isCur = !!next && next.id === l.id;
-    if (isCur) y += 46;
-    pos.push({ x: isCur ? W / 2 : (i % 2 === 0 ? 58 : W - 58), y, l, isCur });
-    y += isCur ? 200 : 124;
-  });
-  const endY = y - 24, pts = [...pos.map(p => [p.x, p.y]), [W / 2, endY]];
-  let dots = '';
-  for (let i = 0; i < pts.length - 1; i++) {
-    const [x1, y1] = pts[i], [x2, y2] = pts[i + 1], my = (y1 + y2) / 2;
-    dots += `<path d="M${x1},${y1} C${x1},${my} ${x2},${my} ${x2},${y2}" fill="none" stroke="#232733" stroke-width="3" stroke-linecap="round" stroke-dasharray="0 14"/>`;
-  }
-  let html = `<svg class="dots" width="${W}" height="${endY + 60}">${dots}</svg>`;
-  pos.forEach(({ x, y, l, isCur }) => {
-    const done = stats.lessons.includes(l.id), sub = done ? 'Hotovo ✓' : '3 min';
-    html += `<button class="node${isCur ? ' cur' : done ? ' done' : ''}" style="left:${x}px;top:${y}px" onclick="openLesson(${l.id})">${isCur ? ICON.play : done ? '✓' : l.id + 1}</button>`;
-    if (isCur) html += `<div class="starttag" style="left:${x}px;top:${y - 72}px">START</div><div class="nlab c" style="left:${x}px;top:${y + 78}px"><b style="font-size:20px">${l.t}</b><span>3 min</span></div>`;
-    else if (x < W / 2) html += `<div class="nlab" style="left:${x + 62}px;top:${y}px"><b>${l.t}</b><span>${sub}</span></div>`;
-    else html += `<div class="nlab" style="right:${W - x + 62}px;top:${y}px;text-align:right"><b>${l.t}</b><span>${sub}</span></div>`;
-  });
-  const d = ls.filter(l => stats.lessons.includes(l.id)).length;
-  html += `<div class="pathend" style="left:${W / 2}px;top:${endY}px"></div><div class="pathend-t" style="left:${W / 2}px;top:${endY + 36}px">${d} z ${ls.length} lekcí hotovo</div>`;
-  el.style.height = (endY + 70) + 'px';
-  el.innerHTML = html;
-}
 function openLesson(id) { clearInterval(cntTimer); sess = null; cnt = null; lesson = { l: LESSONS[id], i: 0, answered: null }; $('overlay').classList.remove('hidden'); renderLesson(); }
 function renderLesson() {
   const { l, i } = lesson, total = l.s.length + 1;
@@ -1814,7 +1805,289 @@ function lessonAnswer(k) { if (!lesson || lesson.answered != null) return; lesso
 function finishLesson() {
   const id = lesson.l.id;
   if (!stats.lessons.includes(id)) { stats.lessons.push(id); today().drills++; saveStats(); toast(`Lekce ${id + 1} hotová ✓`); }
+  if (coachPending != null) { coachDone(coachPending); coachPending = null; }
   closeOverlay();
+}
+
+/* =====================================================================
+   KOUČ — adaptivní plán, rozbor chyb a chat
+   ===================================================================== */
+const SKILL_LESSONS = { hard: [5, 7], stiff: [6, 7], soft: [3, 8], doubles: [9], pairs: [10, 11], surr: [6], index: [18, 20] };
+const PATTERNS = {
+  'H>S': ['Stojíš tam, kde se má táhnout', 'Proti 7 až esu dealer většinou dojde na 17 a víc. S 12–16 proti silné kartě musíš riskovat — stát je dlouhodobě horší.'],
+  'S>H': ['Táhneš tam, kde se má stát', 'Proti 2–6 nech přetahovat dealera. S 13–16 proti slabé kartě stůj — riskuješ jen ty.'],
+  'D>H': ['Zdvojuješ málo', 'Když jsi favorit (10–11 proti slabší kartě, soft ruce proti 4–6), zdvoj — na výhodné ruce vyděláš dvakrát víc.'],
+  'D>S': ['Stojíš místo zdvojení', 'Soft 17–18 proti 3–6 je ideální na double — eso tě chrání před přetažením.'],
+  'H>D': ['Zdvojuješ příliš', 'Double jen tam, kde jsi favorit. Proti 10 a esu je tvoje 10 slabá, soft ruce proti 7+ taky.'],
+  'S>D': ['Zdvojuješ místo stání', 'Soft 19–20 je hotová ruka — nekaz si ji další kartou.'],
+  'P>*': ['Nedělíš páry, které se dělí', 'Esa a osmičky děl vždy. 2,2 / 3,3 / 6,6 / 7,7 proti slabé kartě taky.'],
+  '*>P': ['Dělíš páry zbytečně', '10,10 a 5,5 nikdy nedělíš. 4,4 jen s DAS proti 5–6.'],
+  'SUR>*': ['Zapomínáš na surrender', '16 proti 9–A a 15 proti 10 je tak špatná ruka, že vzdáním ušetříš polovinu sázky.'],
+  '*>SUR': ['Vzdáváš příliš často', 'Surrender jen u 15/16 proti nejsilnějším kartám — jinak se hraje.']
+};
+const patKey = k => { const [c, a] = k.split('>'); return c === 'P' ? 'P>*' : a === 'P' ? '*>P' : c === 'SUR' ? 'SUR>*' : a === 'SUR' ? '*>SUR' : k; };
+const esc = s => String(s).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[m]);
+const md = s => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
+let coachPending = null;
+
+function weakCells(n = 6) {
+  const now = Date.now();
+  return Object.entries(stats.cells).filter(([id, c]) => c.fail > 0 && !id.includes('_18_') && (c.st || 0) < 3)
+    .map(([id, c]) => ({ id, ...c, w: (c.fail + 1) / (c.ok + c.fail + 2) * (1 + (c.t ? Math.max(0, 1 - (now - c.t) / (14 * 864e5)) : 0)) }))
+    .sort((a, b) => b.w - a.w).slice(0, n);
+}
+const fixedCells = () => Object.entries(stats.cells).filter(([, c]) => c.fail > 0 && (c.st || 0) >= 3).map(([id]) => id);
+function skillReport() {
+  return SKILLS.filter(sk => !(sk.needSur && !settings.sur) && !(sk.index && !devsOn()))
+    .map(sk => { const s = skillStats(sk); return { sk, n: s.n, ok: s.ok, p: pct(s.ok, s.n) }; });
+}
+function weakestSkill() {
+  const r = skillReport(), known = r.filter(x => x.n >= 6).sort((a, b) => a.p - b.p);
+  if (known.length && known[0].p < 85) return known[0];
+  return r.find(x => x.n < 6 && !x.sk.index) || known[0] || r[0];
+}
+function rangeAcc(daysBack, len = 7) {
+  let n = 0, ok = 0;
+  for (let i = daysBack; i < daysBack + len; i++) { const d = stats.days[dayKey(Date.now() - i * 864e5)]; if (d) { n += d.n; ok += d.ok; } }
+  return { n, ok, p: pct(ok, n) };
+}
+function topPatterns(n = 2) {
+  const agg = {};
+  for (const k in stats.coach.wrong) { const p = patKey(k); if (PATTERNS[p]) agg[p] = (agg[p] || 0) + stats.coach.wrong[k]; }
+  return Object.entries(agg).filter(([, v]) => v >= 2).sort((a, b) => b[1] - a[1]).slice(0, n);
+}
+function countStep() {
+  const cvOk = stats.count.cv.some(x => pct(x.ok, x.n) >= 80), rcOk = stats.count.rc.filter(x => x.ok).length >= 2;
+  if (!cvOk) return { k: 'count', kind: 'cv', t: 'Hodnoty karet', d: `Nauč se hodnoty v ${SYS[settings.system].name} — základ počítání.` };
+  if (!rcOk || !stats.count.tc.length) return rcOk ? { k: 'count', kind: 'tc', t: 'True count', d: 'Převod running countu na true count.' } : { k: 'count', kind: 'rc', t: 'Running count', d: 'Počítej proud karet a na konci zadej součet.' };
+  return stats.count.daily.includes(dayKey()) ? { k: 'count', kind: 'tc', t: 'True count', d: 'Udrž převod RC → TC v ruce.' } : { k: 'count', kind: 'daily', t: 'Denní count', d: 'Rychlá denní kontrola počítání.' };
+}
+function buildPlan() {
+  const steps = [], ws = weakestSkill(), wc = weakCells(6);
+  let lid = [0, 1, 2].find(i => !stats.lessons.includes(i));
+  if (lid == null && ws) lid = (SKILL_LESSONS[ws.sk.id] || []).find(i => !stats.lessons.includes(i));
+  if (lid == null) { const l = LESSONS.find(l => !stats.lessons.includes(l.id)); lid = l ? l.id : null; }
+  if (lid != null) steps.push({ k: 'lesson', id: lid, t: LESSONS[lid].t, d: lid <= 2 ? 'Nejdřív základy, ať víš, o co hrajeme.' : `Teorie k tomu, co ti teď nejde${ws ? ` (${ws.sk.name.toLowerCase()})` : ''}.` });
+  if (wc.length >= 2) steps.push({ k: 'fix', cells: wc.map(c => c.id), t: 'Oprava chyb', d: `${cellName(wc[0].id)}${wc.length > 1 ? ` + ${wc.length - 1} dalších situací` : ''}, kde chybuješ.` });
+  if (ws) steps.push({ k: 'skill', skill: ws.sk.id, t: ws.sk.name, d: ws.n < 6 ? 'Tohle ještě nemáš vyzkoušené — zjistím, jak na tom jsi.' : `Máš tu ${ws.p} % — cíl je 85 %.` });
+  if (steps.length < 3) steps.push({ k: 'skill', skill: 'mix', t: 'Mix situací', d: 'Náhodné ruce, ať nic nezrezne.' });
+  steps.push(countStep());
+  steps.push({ k: 'table', goal: 15, t: 'Hra u stolu', d: '15 rozhodnutí ve skutečné hře. Chyby ti vysvětlím hned.' });
+  stats.coach.plan = { day: dayKey(), steps: steps.map(s => ({ ...s, done: false })) };
+  saveStats();
+}
+function plan() {
+  if (!stats.coach.plan || stats.coach.plan.day !== dayKey()) buildPlan();
+  const p = stats.coach.plan, tb = stats.coach.table;
+  p.steps.forEach(s => {
+    if (s.k === 'lesson' && stats.lessons.includes(s.id)) s.done = true;
+    if (s.k === 'table' && tb.day === dayKey() && tb.n >= s.goal) s.done = true;
+  });
+  return p;
+}
+function coachDone(i) {
+  const p = stats.coach.plan;
+  if (!p || p.day !== dayKey() || !p.steps[i] || p.steps[i].done) return;
+  p.steps[i].done = true; saveStats();
+  const left = p.steps.filter(s => !s.done).length;
+  toast(left ? `Krok splněn ✓ · zbývá ${left}` : 'Dnešní plán splněn 🎉');
+}
+function startStep(i) {
+  const s = plan().steps[i]; if (!s) return;
+  coachPending = i;
+  if (s.k === 'lesson') openLesson(s.id);
+  else if (s.k === 'fix') startSession({ title: 'Oprava chyb', skill: 'mix', cells: s.cells });
+  else if (s.k === 'skill') startSession({ title: s.t, skill: s.skill });
+  else if (s.k === 'count') startCount(s.kind);
+  else { coachPending = null; showView('play'); }
+}
+function nextStepCard() {
+  const p = plan(), i = p.steps.findIndex(s => !s.done), d = p.steps.filter(s => s.done).length;
+  if (i < 0) return '';
+  const s = p.steps[i];
+  return `<button class="box row nstep" onclick="startStep(${i})"><div class="orb sm">${ICON.spade}</div><div class="grow"><div class="cap" style="font-size:11px;color:var(--lime2)">Kouč · krok ${d + 1} z ${p.steps.length}</div><div class="t" style="font-size:16px;margin-top:3px">${s.t}</div></div><span class="chev">›</span></button>`;
+}
+function coachHeadline() {
+  const d = stats.dec, wk = rangeAcc(0), prev = rangeAcc(7), wc = weakCells(3), fx = fixedCells(), pat = topPatterns(1)[0];
+  if (d.n < 10) return `Ahoj, jsem tvůj kouč. Projdeme spolu základy a pak tě otestuju. Každý den ti podle chyb sestavím nový plán — čím víc hraješ, tím přesněji vím, co trénovat.`;
+  const parts = [];
+  if (wk.n >= 10) parts.push(`Za posledních 7 dní máš **${wk.p} %** správně${prev.n >= 10 ? ` (${wk.p >= prev.p ? '↑' : '↓'} ${Math.abs(wk.p - prev.p)} % proti týdnu předtím)` : ''}.`);
+  else parts.push(`Celkem máš **${pct(d.ok, d.n)} %** správných rozhodnutí z ${d.n}.`);
+  if (wc.length) { const c = wc[0]; parts.push(`Nejvíc tě trápí **${cellName(c.id)}** (${c.fail}× špatně z ${c.ok + c.fail}).`); }
+  if (pat) parts.push(`Vidím vzorec: ${PATTERNS[pat[0]][0].toLowerCase()}.`);
+  if (fx.length) parts.push(`${cellName(fx[fx.length - 1])} už dáváš správně — vyřazuju z opakování.`);
+  parts.push(plan().steps.every(s => s.done) ? 'Dnešní plán máš hotový, skvělá práce.' : 'Dnešní plán jsem upravil podle toho.');
+  return parts.join(' ');
+}
+function stepIcon(s) { return { lesson: '📖', fix: '🩹', skill: '🎯', count: '🧮', table: '🃏' }[s.k] || '•'; }
+function renderLearn() {
+  const p = plan(), done = p.steps.filter(s => s.done).length, cur = p.steps.findIndex(s => !s.done), tb = stats.coach.table;
+  const rep = skillReport(), pats = topPatterns(2), ai = !!aiKey();
+  let h = `<div class="hdr" style="margin-bottom:14px"><div><h1>Kouč</h1><div class="note" style="font-size:14.5px;margin-top:8px">Učí se z tvých chyb</div></div>
+    <div class="hdr-right"><div class="pstat">🔥 ${activeStreak()}</div><button class="pstat" onclick="openAiSettings()" style="font-size:13.5px;color:${ai ? 'var(--lime2)' : 'var(--ink2)'}">${ai ? '✦ Claude' : '✦ AI'}</button></div></div>
+    <div class="cbub"><div class="orb">${ICON.spade}</div><div class="cmsg">${md(coachHeadline())}</div></div>
+    <div class="sectitle" style="margin-top:22px"><h2>Dnešní plán</h2><span class="s">${done}/${p.steps.length}</span></div>
+    <div class="dprog"><i style="width:${done / p.steps.length * 100}%"></i></div>
+    <div class="plan">${p.steps.map((s, i) => `
+      <div class="pstep${s.done ? ' done' : i === cur ? ' cur' : ''}" onclick="${s.done ? '' : `startStep(${i})`}">
+        <div class="pdot">${s.done ? '✓' : stepIcon(s)}</div>
+        <div class="pbody"><div class="pk">${({ lesson: 'Lekce', fix: 'Opakování', skill: 'Trénink', count: 'Počítání', table: 'Stůl' })[s.k]}${s.k === 'table' ? ` · ${Math.min(s.goal, tb.day === dayKey() ? tb.n : 0)}/${s.goal}` : ''}</div>
+          <div class="pt">${s.t}</div><div class="pd">${s.d}</div>
+          ${i === cur ? `<button class="btn btn-lime pgo" onclick="event.stopPropagation();startStep(${i})">${s.k === 'table' ? 'Ke stolu' : 'Začít'}</button>` : ''}</div>
+      </div>`).join('')}</div>
+    ${done === p.steps.length ? `<button class="btn btn-dark" style="margin:-4px 0 18px" onclick="buildPlan();renderLearn()">Přidat další plán</button>` : ''}
+    <div class="sectitle"><h2>Zeptej se</h2><span class="s">${ai ? 'Claude' : 'offline kouč'}</span></div>
+    <div class="box chat"><div class="msgs" id="msgs">${chatHTML()}</div>
+      <div class="chips2">${['Co dělám nejčastěji špatně?', 'Soft 18 vs 9', '16 vs 10', 'Jak počítat true count?', 'Kdy brát pojištění?'].map(q => `<button onclick="askCoach('${q}')">${q}</button>`).join('')}</div>
+      <form class="ask" onsubmit="event.preventDefault();askCoach($('ask-in').value)"><input id="ask-in" placeholder="Napiš třeba „A7 vs 3“ nebo otázku…" autocomplete="off" enterkeyhint="send"><button class="btn btn-lime" type="submit" aria-label="Odeslat">↑</button></form></div>
+    <div class="sectitle"><h2>Co kouč vidí</h2><span class="s" onclick="statsTab='breakdown';showView('stats')" style="cursor:pointer">Rozbor ›</span></div>
+    <div class="box">${rep.map(x => { const [lv, col] = skillLevel(x.p, x.n); return `<div class="sk"><div class="skn">${x.sk.name}<span style="color:${col}">${x.n ? x.p + ' %' : '—'}</span></div><div class="progress"><i style="width:${x.n ? x.p : 0}%;background:${col}"></i></div></div>`; }).join('')}
+      ${pats.length ? `<div class="cap" style="margin:18px 0 6px">Opakující se chyby</div>${pats.map(([k, v]) => `<div class="pat"><b>${PATTERNS[k][0]}</b> <span class="note">· ${v}×</span><div class="note" style="font-size:13.5px;margin-top:4px">${PATTERNS[k][1]}</div></div>`).join('')}` : ''}</div>
+    <div class="sectitle"><h2>Knihovna lekcí</h2><span class="s">${stats.lessons.length}/${LESSONS.length}</span></div>
+    ${SECTIONS.map((s, si) => { const ls = LESSONS.filter(l => l.sec === si), d = ls.filter(l => stats.lessons.includes(l.id)).length; return `<details class="box lib"${si === libOpen ? ' open' : ''} ontoggle="if(this.open)libOpen=${si}"><summary><div class="ico">${suitSvg(s.icon)}</div><div style="flex:1;min-width:0"><div class="t">${s.title}</div><div class="note">${d} z ${ls.length} hotovo</div></div><span class="chev">›</span></summary>
+      ${ls.map(l => `<button class="lrow" onclick="openLesson(${l.id})"><span class="ln${stats.lessons.includes(l.id) ? ' ok' : ''}">${stats.lessons.includes(l.id) ? '✓' : l.id + 1}</span><span style="flex:1">${l.t}</span><span class="note">3 min</span></button>`).join('')}</details>`; }).join('')}`;
+  $('view-learn').innerHTML = h;
+  const m = $('msgs'); if (m) m.scrollTop = m.scrollHeight;
+}
+let libOpen = -1;
+function chatHTML() {
+  const c = stats.coach.chat;
+  if (!c.length) return `<div class="msg c">Zeptej se na jakoukoli ruku (třeba <b>„12 vs 3“</b>, <b>„pár 8 vs 10“</b>, <b>„A7 vs 9“</b>) nebo na pravidla a počítání. Odpovím podle tvých pravidel stolu a tvých statistik.</div>`;
+  return c.slice(-14).map(m => `<div class="msg ${m.r === 'me' ? 'me' : 'c'}">${m.r === 'me' ? esc(m.text) : md(m.text)}</div>`).join('');
+}
+function pushChat(r, text) { stats.coach.chat.push({ r, text }); if (stats.coach.chat.length > 40) stats.coach.chat.splice(0, stats.coach.chat.length - 40); }
+
+/* --- lokální kouč: rozbor ruky + znalostní báze --- */
+function parseHandQ(q) {
+  const s = q.toLowerCase().replace(/eso|esa|ace/g, 'a').replace(/[,;+]/g, ' ').replace(/\s+/g, ' ');
+  const m = s.match(/(.+?)\s*(?:vs\.?|proti|na|v)\s*(10|[2-9]|a|j|q|k)\b/);
+  if (!m) return null;
+  let up = m[2].toUpperCase(); if ('JQK'.includes(up)) up = '10';
+  const p = m[1].trim();
+  let ranks = null, mm;
+  const card = t => { t = t.toUpperCase(); return 'JQK'.includes(t) ? '10' : t; };
+  if ((mm = p.match(/soft\s*(1[3-9]|20)/))) ranks = ['A', String(+mm[1] - 11)];
+  else if ((mm = p.match(/(?:pár|par|pair)\s*(10|[2-9]|a|j|q|k)/))) ranks = [card(mm[1]), card(mm[1])];
+  else if ((mm = p.match(/\b(10|[2-9]|a|j|q|k)\s*(10|[2-9]|a|j|q|k)\b\s*$/))) ranks = [card(mm[1]), card(mm[2])];
+  else if ((mm = p.match(/\ba\s*([2-9]|10)\b/))) ranks = ['A', mm[1]];
+  else if ((mm = p.match(/(?:hard\s*)?\b([5-9]|1[0-9]|20)\b/))) { const t = +mm[1]; if (t <= 11) ranks = t === 11 ? ['6', '5'] : t === 10 ? ['6', '4'] : ['3', String(t - 3)]; else ranks = handForTotal(t) || ['10', String(t - 10)]; }
+  if (!ranks) return null;
+  return { ranks, up };
+}
+function handAnswer(h) {
+  const r = decide(h.ranks, h.up, { canDouble: true, canSplit: true, canSurrender: true });
+  const { total, soft } = scoreRanks(h.ranks), pair = normTen(h.ranks[0]) === normTen(h.ranks[1]);
+  const name = pair ? `Pár ${normTen(h.ranks[0])}` : soft ? `Soft ${total}` : `Hard ${total}`;
+  const c = stats.cells[r.cellId], mine = c ? ` Tvoje skóre v téhle situaci: ${c.ok}/${c.ok + c.fail} správně.` : '';
+  const txt = explain(h.ranks, h.up, r, {}).replace(/<[^>]+>/g, '');
+  return { text: `**${name} vs ${h.up} → ${LABEL[r.action]}**\n${txt}${mine}`, engine: `${name} proti dealerově ${h.up}: správný tah je ${LABEL[r.action]} (${r.desc}).` };
+}
+const KB = [
+  [/true|tc\b|skutečn/, 'True count = running count ÷ počet balíčků, které ještě zbývají v botě. Příklad: RC +6 a zbývají 3 balíčky → TC +2. Zbytek boty odhaduj podle odhazovacího zásobníku. Každý bod TC posouvá výhodu zhruba o 0,5 % ve tvůj prospěch.'],
+  [/running|rc\b|průběž/, 'Running count je průběžný součet hodnot všech viděných karet. V Hi-Lo: 2–6 = +1, 7–9 = 0, 10–A = −1. Počítej po dvojicích karet, které se vyruší (desítka + malá = 0), jde to rychleji.'],
+  [/pojišt|insurance/, 'Pojištění je sázka, že dealer má blackjack. Bez počítání ho nikdy neber — kasino na něm má výhodu kolem 7 %. S Hi-Lo se vyplatí až od **TC +3** a víc.'],
+  [/surrender|vzdát|vzdan/, 'Late surrender: vzdáš ruku a dostaneš zpět polovinu sázky. Vyplatí se u 16 proti 9, 10 a esu, u 15 proti 10 (a s H17 i proti esu) a u 17 proti esu (H17). Jinde se hraje.'],
+  [/double|zdvoj/, 'Zdvoj, když jsi favorit: 11 skoro vždy, 10 proti 2–9, 9 proti 3–6, soft 13–18 proti slabé kartě dealera (hlavně 4–6). Dostaneš jen jednu kartu, ale vyděláš dvojnásobek.'],
+  [/split|rozdě|páry|pary/, 'Esa a osmičky děl vždy. Desítky a pětky nikdy. 9,9 děl proti 2–9 kromě 7. 2,2 / 3,3 / 7,7 proti 2–7, 6,6 proti 2–6, 4,4 jen s DAS proti 5–6.'],
+  [/soft/, 'Soft ruka má eso za 11, takže ji jednou kartou nepřetáhneš. Hraj ji agresivněji: soft 13–17 skoro nikdy nestojí, soft 18 stojí proti 2, 7, 8, táhne proti 9–A a zdvojuje proti 3–6.'],
+  [/sáz|saz|bet|spread|jednot/, 'Sázej podle TC: do TC +1 minimální jednotka, pak zhruba (TC − 1) jednotek. U stolu ti to ukáže tlačítko 💡 před rozdáním. Dobrý spread v botě je 1–8 až 1–12 jednotek.'],
+  [/h17|s17|soft 17/, 'H17 znamená, že dealer táhne i na soft 17. Pro hráče je to horší asi o 0,2 %. Mění to pár tahů: 11 vs A zdvoj, soft 18 vs 2 zdvoj, 15 vs A a 17 vs A surrender.'],
+  [/6:5|3:2|výplat/, 'Stůl 6:5 vyplácí za blackjack jen 12 místo 15 na sázku 10. Přidává kasinu skoro 1,4 % — víc, než dokáže počítání karet vyrovnat. Hraj jen 3:2.'],
+  [/index|odchyl|i18|fab/, 'Indexy jsou odchylky od základní strategie podle TC. Nejdůležitější: pojištění od TC +3, 16 vs 10 stát od TC 0, 15 vs 10 stát od TC +4, 12 vs 3 stát od TC +2, 10,10 vs 5 split od TC +5. Trénuj je v sadě „Indexy I18“.'],
+  [/hodnot|hi-?lo|systém|system/, () => `Používáš **${SYS[settings.system].name}**. Hodnoty karet si procvič v Drilech → Hodnoty, než přejdeš na running count.`],
+  [/rating|hodnocen/, 'Rating roste, když máš v sadě víc správně, než se od tvé úrovně čeká. Čím vyšší rating, tím přísnější očekávání. Perfektní sada dává bonus +10.'],
+  [/odejít|odejit|prohráv|rozptyl|smůl/, 'Krátkodobé výsledky ovládá náhoda — i dokonalá hra má propady o desítky jednotek. Hodnoť rozhodnutí, ne výsledek. Odejdi, když jsi unavený nebo přestáváš počítat přesně.']
+];
+function localAnswer(q) {
+  const s = q.toLowerCase();
+  const h = parseHandQ(q);
+  if (h) return handAnswer(h);
+  if (/chyb|špatně|spatne|slab|co dělám|zlepš|zleps|trápí/.test(s)) {
+    const wc = weakCells(3), pats = topPatterns(2);
+    if (!wc.length && !pats.length) return { text: 'Zatím nemám dost dat. Odehraj pár sad v Tréninku nebo hraj u stolu — chyby si zapisuju a pak ti řeknu přesně, kde ztrácíš.' };
+    return { text: `${wc.length ? `Nejvíc chybuješ v: ${wc.map(c => `**${cellName(c.id)}** (${c.fail}/${c.ok + c.fail})`).join(', ')}.` : ''}${pats.length ? `\n${pats.map(([k]) => `**${PATTERNS[k][0]}** — ${PATTERNS[k][1]}`).join('\n')}` : ''}\nTyhle situace jsem dal do kroku „Oprava chyb“ v dnešním plánu.` };
+  }
+  if (/plán|plan|co dnes|co mám/.test(s)) { const p = plan(), n = p.steps.find(x => !x.done); return { text: n ? `Další krok: **${n.t}** — ${n.d}` : 'Dnešní plán máš hotový. Klidně si přidej další.' }; }
+  for (const [re, a] of KB) if (re.test(s)) return { text: typeof a === 'function' ? a() : a };
+  return null;
+}
+async function askCoach(q) {
+  q = String(q || '').trim(); if (!q) return;
+  pushChat('me', q);
+  const loc = localAnswer(q), key = aiKey();
+  if (!key) {
+    pushChat('c', loc ? loc.text : 'Tohle offline kouč neumí. Zkus napsat ruku, třeba **„15 vs 10“**, nebo téma: true count, pojištění, split, double, surrender, sázení, indexy. Pro volnou konverzaci připoj Claude (tlačítko ✦ AI nahoře).');
+    saveStats(); renderLearn(); return;
+  }
+  pushChat('c', '…'); renderLearn();
+  const msg = stats.coach.chat[stats.coach.chat.length - 1];
+  try {
+    await askClaude(loc, t => { msg.text = t; const el = $('msgs'); if (el && el.lastElementChild) { el.lastElementChild.innerHTML = md(t); el.scrollTop = el.scrollHeight; } });
+  } catch (e) {
+    msg.text = (loc ? loc.text + '\n\n' : '') + `(Claude teď nedostupný: ${e && e.status === 401 ? 'neplatný API klíč' : e && e.message ? e.message.slice(0, 80) : 'chyba sítě'})`;
+  }
+  saveStats(); if (currentView === 'learn') renderLearn();
+}
+
+/* --- Claude (volitelné, vlastní API klíč uložený jen v tomto zařízení) --- */
+const aiKey = () => { try { return localStorage.getItem('bjwiz4_aikey') || ''; } catch (e) { return ''; } };
+let AnthropicSDK = null;
+function coachContext() {
+  const rep = skillReport().map(x => `${x.sk.name}: ${x.n ? x.p + ' % z ' + x.n : 'nezkoušeno'}`).join('; ');
+  const wc = weakCells(6).map(c => `${cellName(c.id)} (${c.fail}× špatně z ${c.ok + c.fail})`).join('; ') || 'zatím žádné';
+  const pats = topPatterns(3).map(([k, v]) => `${PATTERNS[k][0]} (${v}×)`).join('; ') || 'žádné';
+  const st = plan().steps.map(s => `${s.done ? '[hotovo]' : '[čeká]'} ${s.t}`).join(', ');
+  return `Pravidla stolu: ${settings.decks} balíčků, dealer ${settings.h17 ? 'táhne' : 'stojí'} na soft 17, BJ ${settings.bjPay === 1.5 ? '3:2' : '6:5'}, DAS ${settings.das ? 'ano' : 'ne'}, late surrender ${settings.sur ? 'ano' : 'ne'}, systém počítání ${SYS[settings.system].name}${devsOn() ? ' s indexy I18/Fab4' : ''}.
+Hráč: rating ${stats.rating} (${rankTitle(stats.rating)}), ${stats.dec.n} rozhodnutí, ${pct(stats.dec.ok, stats.dec.n)} % správně, lekcí ${stats.lessons.length}/${LESSONS.length}.
+Dovednosti: ${rep}.
+Nejčastější chybné situace: ${wc}.
+Opakující se vzorce chyb: ${pats}.
+Dnešní plán: ${st}.`;
+}
+async function askClaude(loc, onText) {
+  if (!AnthropicSDK) AnthropicSDK = (await import('https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@0.132.1/+esm')).default;
+  const client = new AnthropicSDK({ apiKey: aiKey(), dangerouslyAllowBrowser: true });
+  const msgs = [];
+  for (const m of stats.coach.chat.slice(-13, -1)) {
+    const role = m.r === 'me' ? 'user' : 'assistant';
+    if (!msgs.length && role !== 'user') continue;
+    if (msgs.length && msgs[msgs.length - 1].role === role) msgs[msgs.length - 1].content += '\n' + m.text; else msgs.push({ role, content: m.text });
+  }
+  if (loc && loc.engine) msgs[msgs.length - 1].content += `\n\n[Výpočet strategie z aplikace: ${loc.engine}]`;
+  const system = `Jsi osobní blackjack kouč v aplikaci BJ Wiz PRO. Hráč se učí základní strategii a počítání karet. Odpovídej česky, přátelsky a konkrétně, nejvýš kolem 120 slov. Žádné nadpisy, můžeš použít **tučné**. Když je ve zprávě „Výpočet strategie z aplikace“, je to přesná odpověď pro jeho pravidla — vysvětli ji, nikdy jí neodporuj. Nevymýšlej statistiky, používej jen data níže. Kde se hodí, doporuč konkrétní krok v aplikaci (Trénink, Drily, Kouč → plán, lekce, Hra).\n\n${coachContext()}`;
+  const stream = client.beta.messages.stream({
+    model: 'claude-opus-5-5', max_tokens: 4000, output_config: { effort: 'low' },
+    betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
+    system, messages: msgs
+  });
+  let acc = '';
+  for await (const ev of stream) if (ev.type === 'content_block_delta' && ev.delta.type === 'text_delta') { acc += ev.delta.text; onText(acc); }
+  const fin = await stream.finalMessage();
+  if (fin.stop_reason === 'refusal' && !acc) onText(loc ? loc.text : 'Na tohle ti neodpovím, zkus otázku jinak.');
+}
+function openAiSettings() {
+  const k = aiKey();
+  openModal(`<h3>✦ AI kouč (Claude)</h3>
+    <p>Offline kouč funguje vždy: plán, rozbor chyb i odpovědi na ruce. S vlastním API klíčem od Anthropic můžeš s koučem volně konverzovat — zná tvoje statistiky a pravidla stolu.</p>
+    <p style="font-size:13px">Klíč se ukládá jen v tomto zařízení a posílá se přímo do Anthropic API. Dotazy se účtují na tvůj účet (platform.claude.com).</p>
+    <input id="ai-in" class="sel" style="width:100%;padding:14px;font-size:15px" placeholder="sk-ant-…" value="${k ? '••••••••' + esc(k.slice(-4)) : ''}" autocomplete="off">
+    <button class="btn btn-lime" onclick="saveAiKey()">Uložit</button>
+    ${k ? `<button class="btn btn-ghost" style="font-size:15px;padding:14px" onclick="localStorage.removeItem('bjwiz4_aikey');closeModal();refreshView();toast('Klíč odstraněn')">Odpojit Claude</button>` : `<button class="btn btn-dark" style="font-size:15px;padding:14px" onclick="closeModal()">Zavřít</button>`}`);
+}
+function saveAiKey() {
+  const v = $('ai-in').value.trim();
+  if (v.startsWith('••')) { closeModal(); return; }
+  if (!/^sk-ant-/.test(v)) { toast('Klíč má začínat sk-ant-'); return; }
+  try { localStorage.setItem('bjwiz4_aikey', v); } catch (e) {}
+  closeModal(); refreshView(); toast('Claude připojen ✦');
+}
+function coachAfterSession(s) {
+  const wrong = s.res.filter(x => !x.ok), fixed = s.res.filter(x => x.ok && (stats.cells[x.r.cellId] || {}).st === 3 && (stats.cells[x.r.cellId] || {}).fail);
+  if (!wrong.length) return fixed.length ? `${cellName(fixed[0].r.cellId)} už máš zafixované — vyřazuju ho z opakování.` : 'Čistá sada. Přitvrdím ti příště o úroveň.';
+  const k = wrong[0].r.cellId, c = stats.cells[k];
+  const again = c && c.fail >= 2 ? `**${cellName(k)}** má už ${c.fail} chyby — dávám ho do zítřejší opravy chyb.` : `**${cellName(k)}** si zapisuju a ještě se k němu vrátím.`;
+  const w = wrong[0], why = explain([w.h.p1, w.h.p2], w.h.dealer, w.r, { tc: w.h.tc }).replace(/<[^>]+>/g, '');
+  return `${again} Proč ${LABEL[w.r.action]}: ${why}`;
 }
 
 /* =====================================================================
@@ -2025,9 +2298,9 @@ function refreshView() {
   else if (currentView === 'learn') renderLearn();
   else if (currentView === 'stats') renderStats();
 }
-window.addEventListener('resize', () => { if (currentView === 'learn') SECTIONS.forEach((_, i) => drawPath(i)); });
 document.addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.target && e.target.id === 'ask-in') return;
   if (!$('modal').classList.contains('hidden')) { if (e.key === 'Escape') closeModal(); else if (e.key === 'Enter' && $('m-in')) checkGameCount(); return; }
   if (!$('sheet').classList.contains('hidden')) { if (e.key === 'Escape') closeSheet(); return; }
   const k = e.key.toLowerCase(), map = { h: 'H', s: 'S', d: 'D', p: 'P', r: 'SUR' };
