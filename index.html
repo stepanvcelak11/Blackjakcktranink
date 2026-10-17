@@ -226,6 +226,30 @@ input,select{font:inherit;color:inherit}
 .acts .a:disabled{opacity:.3}
 .a-hit{background:var(--green);color:#04170e}.a-stand{background:var(--red);color:#fff}.a-dbl{background:var(--lime);color:#0c0b18}.a-split{background:var(--blue);color:#03182a}.a-sur{background:var(--card2);color:var(--ink);border:1px solid var(--hair)}
 .acts .a:active:not(:disabled){transform:scale(.97)}
+.acts.nosur .a.sm{grid-column:span 3}
+#app.playing .nav{display:none}
+#app.playing .pbottom{padding-bottom:calc(var(--safe-b) + 12px)}
+#app.playing #mist{bottom:calc(var(--safe-b) + 12px)}
+.sdesc{display:block;font-size:12.5px;font-weight:500;color:var(--ink2);line-height:1.45;margin-top:4px}
+.preset{width:100%;text-align:left;display:flex;gap:12px;align-items:flex-start;padding:14px 16px;background:var(--card);border:1px solid var(--hair);border-radius:14px;margin-bottom:8px}
+.preset.on{border-color:var(--lime);background:var(--acc-bg)}
+.preset b{display:block;font-size:15.5px}
+.preset .rd{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:none;margin-top:2px}
+.preset.on .rd{border:6px solid var(--lime)}
+.sysc{background:var(--card);border:1px solid var(--hair);border-radius:16px;padding:16px;margin-bottom:10px}
+.sysc.on{border-color:var(--lime)}
+.sysh{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sysh b{font-family:var(--display);font-size:19px;letter-spacing:-.02em;margin-right:auto}
+.badge{padding:3px 8px;border-radius:7px;background:var(--card2);color:var(--ink2);font-size:11.5px;font-weight:800;letter-spacing:.04em}
+.vals{display:grid;grid-template-columns:repeat(10,1fr);gap:3px;margin:12px 0}
+.vals div{text-align:center;background:var(--card2);border-radius:7px;padding:5px 0;font-size:11px;font-weight:700;color:var(--ink2)}
+.vals div b{display:block;font-size:14px;color:var(--ink)}
+.vals div b.g{color:var(--green)}.vals div b.r{color:var(--red)}
+.mets{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.met{font-size:11px;font-weight:700;color:var(--ink2)}
+.met .progress{margin-top:5px}
+.pc{font-size:13.5px;line-height:1.5;color:#d9dce6;margin:6px 0 0}
+.pc b{color:var(--ink)}
 
 /* ---------- OVERLAY ---------- */
 #overlay{position:absolute;inset:0;z-index:40;background:var(--bg);display:flex;flex-direction:column;padding:calc(var(--safe-t) + 10px) 18px calc(var(--safe-b) + 18px);overflow-y:auto;animation:slideUp .25s cubic-bezier(.2,.9,.3,1)}
@@ -428,6 +452,8 @@ function fitViewport() {
 }
 fitViewport();
 window.addEventListener('resize', fitViewport);
+if (window.visualViewport) visualViewport.addEventListener('resize', fitViewport);
+window.addEventListener('pageshow', fitViewport); [300, 1200].forEach(t => setTimeout(fitViewport, t));
 window.addEventListener('orientationchange', () => setTimeout(fitViewport, 300));
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const rand = a => a[Math.floor(Math.random() * a.length)];
@@ -454,7 +480,7 @@ const ICON = {
    NASTAVENÍ
    ===================================================================== */
 const DEFAULT_SETTINGS = {
-  decks: 6, h17: true, das: true, sur: true, bjPay: 1.5, pen: .75, unit: 10,
+  decks: 6, h17: true, das: true, sur: true, enhc: false, insurance: true, style: 'vegas', styleSet: false, bjPay: 1.5, pen: .75, unit: 10,
   system: 'hilo', showCount: true, deviations: true, mode: 'casino',
   coach: true, speed: 'normal', sound: true, haptics: true, rcSpeed: 'relaxed'
 };
@@ -610,6 +636,11 @@ const DEALER_COLS = ['2','3','4','5','6','7','8','9','10','A'];
 const LABEL = { H: 'HIT', S: 'STAND', D: 'DOUBLE', P: 'SPLIT', SUR: 'SURRENDER' };
 let CH = null;
 function buildCharts() {
+  const c = baseCharts();
+  if (settings.enhc) { c.HARD[11][8] = 'H'; c.HARD[11][9] = 'H'; c.PAIR.A[9] = 'N'; c.PAIR['8'][8] = 'N'; c.PAIR['8'][9] = 'N'; }
+  return c;
+}
+function baseCharts() {
   const h17 = settings.h17, S5 = ['S','S','S','S','S'], H5 = ['H','H','H','H','H'];
   return {
     HARD: {
@@ -677,9 +708,9 @@ const DEVIATIONS = [
   { id: '16v10', total: 16, up: '10', idx: 0, act: 'S', noSur: true, label: '16 vs 10: Stand při TC ≥ 0' },
   { id: '15v10', total: 15, up: '10', idx: 4, act: 'S', noSur: true, label: '15 vs 10: Stand při TC ≥ +4' },
   { id: '16v9', total: 16, up: '9', idx: 5, act: 'S', noSur: true, label: '16 vs 9: Stand při TC ≥ +5' },
-  { id: '10v10', total: 10, up: '10', idx: 4, act: 'D', label: '10 vs 10: Double při TC ≥ +4' },
-  { id: '10vA', total: 10, up: 'A', idx: () => (settings.h17 ? 3 : 4), act: 'D', label: '10 vs A: Double při TC ≥ +4 (H17 +3)' },
-  { id: '11vA', total: 11, up: 'A', idx: 1, act: 'D', s17: true, label: '11 vs A: Double při TC ≥ +1 (S17)' },
+  { id: '10v10', total: 10, up: '10', idx: 4, act: 'D', peek: true, label: '10 vs 10: Double při TC ≥ +4' },
+  { id: '10vA', total: 10, up: 'A', idx: () => (settings.h17 ? 3 : 4), act: 'D', peek: true, label: '10 vs A: Double při TC ≥ +4 (H17 +3)' },
+  { id: '11vA', total: 11, up: 'A', idx: 1, act: 'D', s17: true, peek: true, label: '11 vs A: Double při TC ≥ +1 (S17)' },
   { id: '9v2', total: 9, up: '2', idx: 1, act: 'D', label: '9 vs 2: Double při TC ≥ +1' },
   { id: '9v7', total: 9, up: '7', idx: 3, act: 'D', label: '9 vs 7: Double při TC ≥ +3' },
   { id: '12v2', total: 12, up: '2', idx: 3, act: 'S', label: '12 vs 2: Stand při TC ≥ +3' },
@@ -695,7 +726,7 @@ const DEVIATIONS = [
   { id: '15vAs', total: 15, up: 'A', idx: 1, act: 'SUR', sur: true, s17: true, label: '15 vs A: Surrender při TC ≥ +1 (S17)' }
 ];
 const devIdx = dv => (typeof dv.idx === 'function' ? dv.idx() : dv.idx);
-const devOk = dv => !(dv.s17 && settings.h17) && !(dv.sur && !settings.sur) && !(dv.noSur && settings.sur);
+const devOk = dv => !(dv.peek && settings.enhc) && !(dv.s17 && settings.h17) && !(dv.sur && !settings.sur) && !(dv.noSur && settings.sur);
 function deviationFor(ranks, up, ctx, base) {
   const tc = ctx.tc; if (tc == null) return null;
   const d = normTen(up), pair = ranks.length === 2 && normTen(ranks[0]) === normTen(ranks[1]);
@@ -705,6 +736,7 @@ function deviationFor(ranks, up, ctx, base) {
     if (dv.pair) { if (!(pair && ctx.canSplit && normTen(ranks[0]) === dv.pair)) continue; }
     else if (soft || dv.total !== total || base.action === 'P') continue;
     if (dv.s17 && settings.h17) continue;
+    if (dv.peek && settings.enhc) continue;
     if (dv.sur && !canSur) continue;
     if (dv.noSur && canSur) continue;
     if (dv.act === 'D' && !ctx.canDouble) continue;
@@ -720,7 +752,7 @@ function decide(ranks, up, ctx) {
   return base;
 }
 const devsOn = () => settings.deviations && settings.system === 'hilo';
-const shouldInsure = tc => devsOn() && tc >= 3;
+const shouldInsure = tc => settings.insurance && devsOn() && tc >= 3;
 
 /* =====================================================================
    BOTA
@@ -752,7 +784,7 @@ function settleHands(hands, dealer) {
   const dBJ = isBJ(dealer), ds = score(dealer), single = hands.length === 1 && !hands[0].fromSplit;
   return hands.map(h => {
     const p = score(h.cards), pBJ = single && isBJ(h.cards);
-    if (h.surrendered) return { pay: h.bet / 2, res: 'surrender' };
+    if (h.surrendered) return dBJ && settings.enhc ? { pay: 0, res: 'lose' } : { pay: h.bet / 2, res: 'surrender' };
     if (pBJ && dBJ) return { pay: h.bet, res: 'push' };
     if (pBJ) return { pay: h.bet + h.bet * settings.bjPay, res: 'bj' };
     if (dBJ) return { pay: 0, res: 'lose' };
@@ -903,12 +935,12 @@ function renderSession() {
       <div style="display:flex;flex-direction:column;align-items:center"><div class="row-cards">${h.cards.map(c => cardHTML(c, { size: 'md', anim: 'fade' })).join('')}</div>
       <div class="score">${pair ? `Pár ${normTen(h.p1)}` : soft ? `Soft ${total}` : `Hard ${total}`}</div></div>
     </div>
-    <div id="s-acts" class="acts">
+    <div id="s-acts" class="acts${settings.sur ? '' : ' nosur'}">
       <button class="a a-hit" onclick="sessAnswer('H')">HIT</button>
       <button class="a a-stand" onclick="sessAnswer('S')">STAND</button>
       <button class="a sm a-dbl" onclick="sessAnswer('D')">DOUBLE</button>
       <button class="a sm a-split" onclick="sessAnswer('P')">SPLIT</button>
-      <button class="a sm a-sur" onclick="sessAnswer('SUR')" ${settings.sur ? '' : 'disabled'}>SURR.</button>
+      ${settings.sur ? `<button class="a sm a-sur" onclick="sessAnswer('SUR')">SURR.</button>` : ''}
     </div>`;
 }
 function sessAnswer(a) {
@@ -1065,14 +1097,53 @@ function startCvDemo() {
   };
   step(); cvDemoT = setInterval(step, 1600);
 }
+const SYS_INFO = {
+  hilo: { bc: .97, pe: .51, ic: .76, diff: 'Snadný',
+    how: 'Malé karty (2–6) +1, velké (10–A) −1, 7–9 nic. Running count na konci převedeš na <b>true count</b>: vydělíš ho počtem balíčků, které zbývají v botě.',
+    pro: 'Nejrozšířenější systém na světě — nejvíc knih, tabulek a indexů (I18 a Fab 4 v aplikaci jsou právě pro Hi-Lo). Velmi přesný pro sázení v botě 6–8 balíčků. Hodnoty jen ±1 se rychle sčítají.',
+    con: 'Musíš průběžně odhadovat zbytek boty a dělit. Pro rozhodování o tahu je méně přesný než systémy úrovně 2 (nejvíc to znát u hry s 1–2 balíčky).',
+    who: 'První systém pro každého. Pokud nevíš, vyber tenhle.' },
+  ko: { bc: .98, pe: .55, ic: .78, diff: 'Nejsnazší',
+    how: 'Jako Hi-Lo, ale i 7 je +1, takže balíček nedá dohromady nulu. Začínáš na záporném čísle (u 6 balíčků −20) a sázku zvedáš, když running count dojde ke klíčovému číslu (kolem +4).',
+    pro: 'Žádné dělení ani odhad zbývajících balíčků — sledováš jen running count. V hlučném kasinu nejméně chyb. Pro sázení skoro stejně dobrý jako Hi-Lo.',
+    con: 'Indexy (odchylky ve hře) jsou jen přibližné, protože nepracuješ s true countem — v aplikaci se pro KO nepoužívají. Startovní číslo se mění podle počtu balíčků.',
+    who: 'Kdo chce co nejjednodušší počítání a hraje hlavně podle základní strategie.' },
+  hiopt1: { bc: .88, pe: .61, ic: .85, diff: 'Střední',
+    how: '3–6 +1, desítky −1, eso a 2 se nepočítají (0). Vyvážený systém, takže převádíš na true count jako u Hi-Lo.',
+    pro: 'Přesnější pro rozhodování o tahu (PE 0,61) a pro pojištění — vyplatí se hlavně u stolů s 1–2 balíčky.',
+    con: 'Eso se nepočítá, ale pro sázení je důležité — bez zvláštního počítání es (side count) je slabší v sázení. Side count je další zátěž navíc.',
+    who: 'Pokročilí hráči na stolech s malým počtem balíčků.' },
+  omega2: { bc: .92, pe: .67, ic: .85, diff: 'Náročný',
+    how: 'Úroveň 2: 4–6 +2, 2, 3, 7 +1, 9 −1, desítky −2, eso 0. Running count dělíš zbývajícími balíčky.',
+    pro: 'Nejvyšší přesnost hraní z nabízených systémů — nejlépe pozná, kdy změnit tah.',
+    con: 'Sčítat ±2 je pomalejší a pod tlakem kasina chybovější. Eso je 0, takže pro sázení potřebuješ side count es. Zisk proti Hi-Lo v botě je jen malý.',
+    who: 'Zkušení počítači, kteří chtějí maximum a mají čas trénovat.' },
+  zen: { bc: .96, pe: .63, ic: .85, diff: 'Náročný',
+    how: 'Úroveň 2: 4–6 +2, 2, 3, 7 +1, desítky −2, eso −1. Převádíš na true count.',
+    pro: 'Výborný kompromis — skoro stejně dobrý v sázení jako Hi-Lo a lepší ve hraní. Nepotřebuje side count es.',
+    con: 'Úroveň 2 je náročnější a pomalejší než Hi-Lo; v botě 6–8 balíčků přinese jen o málo víc.',
+    who: 'Kdo už Hi-Lo zvládá a chce přesnější systém bez side countu.' }
+};
 function pickSystem() {
-  openSheet(`<h3>Počítací systém</h3><div class="sg">${Object.entries(SYS).map(([k, s]) => `<button class="si" style="width:100%" onclick="setSetting('system','${k}');closeSheet()"><span>${s.name}${s.balanced ? '' : ' · nevyvážený'}${s.level > 1 ? ' · úroveň 2' : ''}</span><b class="l">${settings.system === k ? '✓' : ''}</b></button>`).join('')}</div>`);
+  const metric = (l, v) => `<div class="met">${l} <b style="color:var(--ink)">${v.toFixed(2)}</b><div class="progress"><i style="width:${v * 100}%"></i></div></div>`;
+  openSheet(`<h3>Počítací systém</h3>
+    <div class="si col" style="margin-top:14px;gap:6px"><b>Jak počítání funguje</b><span class="sdesc" style="font-size:13.5px">Když z boty odejdou malé karty, zbývá víc desítek a es. To je dobré pro tebe: častěji dostaneš blackjack (3 : 2), double vychází lépe a dealer víc přetahuje. Count ti říká, kdy zvednout sázku a kdy hrát jinak.</span>
+    <span class="sdesc" style="font-size:13.5px"><b style="color:var(--ink)">BC</b> = jak dobře count předpovídá výhodu (sázení), <b style="color:var(--ink)">PE</b> = jak dobře pomáhá měnit tahy, <b style="color:var(--ink)">IC</b> = přesnost u pojištění. Čím blíž 1, tím lépe.</span></div>
+    <div class="sg">${Object.entries(SYS).map(([k, sy]) => { const inf = SYS_INFO[k], on = settings.system === k; return `<div class="sysc${on ? ' on' : ''}">
+      <div class="sysh"><b>${sy.name}</b><span class="badge">ÚROVEŇ ${sy.level}</span><span class="badge">${sy.balanced ? 'VYVÁŽENÝ' : 'NEVYVÁŽENÝ'}</span><span class="badge">${inf.diff.toUpperCase()}</span></div>
+      <div class="vals">${RANKS10.map(r => { const v = sy.v[r]; return `<div>${r === '10' ? '10' : r}<b class="${v > 0 ? 'g' : v < 0 ? 'r' : ''}">${v > 0 ? '+' + v : v < 0 ? '−' + -v : '0'}</b></div>`; }).join('')}</div>
+      <div class="mets">${metric('BC', inf.bc)}${metric('PE', inf.pe)}${metric('IC', inf.ic)}</div>
+      <p class="pc"><b>Jak funguje:</b> ${inf.how}</p><p class="pc"><b style="color:var(--green)">V čem je dobrý:</b> ${inf.pro}</p><p class="pc"><b style="color:var(--red)">Kde zaostává:</b> ${inf.con}</p><p class="pc"><b>Pro koho:</b> ${inf.who}</p>
+      <button class="btn ${on ? 'btn-dark' : 'btn-lime'}" style="margin-top:12px;padding:12px;font-size:15px" ${on ? 'disabled' : ''} onclick="setSetting('system','${k}');pickSystem()">${on ? '✓ Používáš' : 'Používat ' + sy.name}</button></div>`; }).join('')}</div>`);
+  sheetKind = 'system';
 }
 function systemHelp() {
   const v = SYS[settings.system].v, g = {};
   for (const r of RANKS10) (g[v[r]] = g[v[r]] || []).push(r === '10' ? '10/J/Q/K' : r);
   openModal(`<h3>${SYS[settings.system].name}</h3>${Object.keys(g).map(Number).sort((a, b) => b - a).map(k => `<p><b class="${k > 0 ? 'g' : k < 0 ? 'r' : ''}" style="font-size:18px">${sgn(k)}</b> &nbsp; ${g[k].join(', ')}</p>`).join('')}
     <p class="note">${SYS[settings.system].balanced ? 'Vyvážený systém: celý balíček dá 0. True Count = Running Count ÷ zbývající balíčky.' : `Nevyvážený: ve hře začínáš na ${sgn(irc())} a sázku zvyšuješ od +4. True Count nepotřebuješ.`}</p>
+    <p class="note">${SYS_INFO[settings.system].pro}</p>
+    <button class="btn btn-lime" onclick="closeModal();pickSystem()">Porovnat systémy</button>
     <button class="btn btn-dark" onclick="closeModal()">Rozumím</button>`);
 }
 
@@ -1238,11 +1309,12 @@ async function deal() {
   game.busy = true; game.bank -= game.bet; game.insBet = 0; game.holeShown = false; game.results = null;
   game.hands = [mkHand([], game.bet)]; game.dealer = []; game.active = 0; game.phase = 'deal';
   coach('', 'Rozdávám…'); renderPlay();
-  const steps = [() => game.hands[0].cards.push(draw()), () => game.dealer.push(draw()), () => game.hands[0].cards.push(draw()), () => game.dealer.push(draw(false))];
+  const steps = [() => game.hands[0].cards.push(draw()), () => game.dealer.push(draw()), () => game.hands[0].cards.push(draw())];
+  if (!settings.enhc) steps.push(() => game.dealer.push(draw(false)));
   for (const s of steps) { await sleep(speedMs() * .7); s(); sfx.card(); renderPlay(); }
   await sleep(speedMs() * .6);
   game.busy = false;
-  if (game.dealer[0].r === 'A') { game.phase = 'insurance'; coach('info', isBJ(game.hands[0].cards) ? 'Máš blackjack, dealer ukazuje eso. Even money?' : 'Dealer ukazuje eso. Pojištění?'); renderPlay(); return; }
+  if (game.dealer[0].r === 'A' && settings.insurance) { game.phase = 'insurance'; coach('info', isBJ(game.hands[0].cards) ? 'Máš blackjack, dealer ukazuje eso. Even money?' : 'Dealer ukazuje eso. Pojištění?'); renderPlay(); return; }
   await afterInsurance(false);
 }
 async function insurance(yes) {
@@ -1262,10 +1334,10 @@ async function insurance(yes) {
 async function afterInsurance(fromIns) {
   game.busy = true;
   const up = normTen(game.dealer[0].r), dBJ = isBJ(game.dealer), pBJ = isBJ(game.hands[0].cards);
-  if ((up === 'A' || up === '10') && dBJ) { if (!graded()) coach('info', 'Dealer nahlédl — má blackjack'); await dealerTurn(true); return; }
+  if (!settings.enhc && (up === 'A' || up === '10') && dBJ) { if (!graded()) coach('info', 'Dealer nahlédl — má blackjack'); await dealerTurn(true); return; }
   if (pBJ) { await dealerTurn(true); return; }
   game.phase = 'play'; game.busy = false;
-  if (game.insBet) coach('info', 'Dealer nemá blackjack — pojištění propadá');
+  if (game.insBet && !settings.enhc) coach('info', 'Dealer nemá blackjack — pojištění propadá');
   else if (!fromIns || !settings.coach) coach('', 'Tvůj tah');
   renderPlay();
 }
@@ -1318,9 +1390,15 @@ async function nextHand() {
 }
 async function dealerTurn(noDraw) {
   game.phase = 'dealer';
-  const hole = game.dealer[1];
-  game.holeShown = true; hole.flip = true; game.shoe.rc += cv(hole.r);
-  sfx.card(); renderPlay(); await sleep(speedMs() + 150);
+  if (settings.enhc) {
+    const up = normTen(game.dealer[0].r), live = game.hands.some(h => !h.surrendered && score(h.cards) <= 21);
+    game.holeShown = true;
+    if (noDraw ? (up === 'A' || up === '10') : (live || game.insBet)) { game.dealer.push(draw()); sfx.card(); renderPlay(); await sleep(speedMs() + 150); }
+  } else {
+    const hole = game.dealer[1];
+    game.holeShown = true; hole.flip = true; game.shoe.rc += cv(hole.r);
+    sfx.card(); renderPlay(); await sleep(speedMs() + 150);
+  }
   const live = game.hands.some(h => !h.surrendered && score(h.cards) <= 21);
   const onlyBJ = game.hands.length === 1 && !game.hands[0].fromSplit && isBJ(game.hands[0].cards);
   if (!noDraw && live && !onlyBJ && !isBJ(game.dealer)) while (dealerShouldHit(game.dealer)) { game.dealer.push(draw()); sfx.card(); renderPlay(); await sleep(speedMs() + 140); }
@@ -1409,7 +1487,7 @@ function applyCoach() {
   setHTML(el, `<span>${coachState.html}</span>${coachState.extra}`);
 }
 function topHTML() {
-  return `<button class="pbox" style="padding:0 13px" onclick="settings.sound=!settings.sound;saveSettings();renderPlay()" aria-label="Zvuk"><svg viewBox="0 0 24 24" style="stroke:var(--ink2)"><path d="M11 5 6 9H3v6h3l5 4z"/>${settings.sound ? '<path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/>' : '<path d="m16 9 5 6M21 9l-5 6"/>'}</svg></button>
+  return `<button class="pbox" style="padding:0 12px" onclick="leavePlay()" aria-label="Zpět"><svg viewBox="0 0 24 24" style="stroke:var(--ink)"><path d="M15 5l-7 7 7 7"/></svg></button>
     <div class="pbox"><svg class="icn" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/></svg><div><div class="k">ŽETONY</div><div class="v">${money(game.bank)}</div></div></div>
     <div class="pbox"><svg class="icn" viewBox="0 0 24 24"><path d="m3 16 6-6 4 4 8-8"/></svg><div><div class="k">SEZENÍ</div><div class="v ${game.net > 0 ? 'up' : game.net < 0 ? 'down' : ''}">${moneyS(game.net)}</div></div></div>
     <button class="pill-w" onclick="openGameStats()"><svg class="icn" viewBox="0 0 24 24"><path d="M4 20h16M7 16v-4M12 16V8M17 16v-7"/></svg>STATS</button>
@@ -1484,18 +1562,19 @@ function playControls() {
   }
   const h = game.hands[game.active], c = h && game.phase === 'play' ? caps(h) : {}, off = game.phase !== 'play' || game.busy;
   const d = x => (off || !x ? 'disabled' : '');
-  return `<div class="acts">
+  return `<div class="acts${settings.sur ? '' : ' nosur'}">
       <button class="a a-hit" ${d(1)} onclick="act('H')">HIT<small>další karta</small></button>
       <button class="a a-stand" ${d(1)} onclick="act('S')">STAND<small>stát</small></button>
       <button class="a sm a-dbl" ${d(c.double)} onclick="act('D')">DOUBLE</button>
       <button class="a sm a-split" ${d(c.split)} onclick="act('P')">SPLIT</button>
-      <button class="a sm a-sur" ${d(c.sur)} onclick="act('SUR')">SURR.</button></div>
+      ${settings.sur ? `<button class="a sm a-sur" ${d(c.sur)} onclick="act('SUR')">SURR.</button>` : ''}</div>
     <button class="btn btn-dark" style="padding:12px;font-size:15px;color:var(--lime)" ${off ? 'disabled' : ''} onclick="hint()">💡 Rada poradce</button>`;
 }
 
 /* ---------- VYSVĚTLENÍ CHYB ---------- */
 const DBUST = { 2: 35, 3: 37, 4: 40, 5: 42, 6: 42, 7: 26, 8: 24, 9: 23, 10: 23, A: 17 };
 const pBust = t => (t <= 11 ? 0 : Math.round((t - 8) / 13 * 100));
+const k0 = ranks => normTen(ranks[0]);
 function explain(ranks, up, r, ctx = {}) {
   const d = normTen(up), b = DBUST[d], weak = ['2', '3', '4', '5', '6'].includes(d), di = DEALER_COLS.indexOf(d);
   const { total: t, soft } = scoreRanks(ranks), pair = ranks.length === 2 && normTen(ranks[0]) === normTen(ranks[1]), a = r.action;
@@ -1504,6 +1583,8 @@ function explain(ranks, up, r, ctx = {}) {
     const tc = ctx.tc;
     return `Tohle je index — odchylka od základní strategie. Při TC ${fmt1(tc)} zbývá v botě ${tc >= 0 ? 'nadprůměrně' : 'podprůměrně'} desítek a es, takže se vyplatí ${LABEL[a]} místo běžného tahu. (${r.desc.replace(/^Index /, '')})`;
   }
+  if (settings.enhc && (d === '10' || d === 'A') && ((pair && (k0(ranks) === 'A' || k0(ranks) === '8') && a !== 'P') || (!pair && !soft && t === 11 && a === 'H')))
+    return `Evropské pravidlo bez skryté karty: dealer s ${d} ještě může mít blackjack (asi v ${d === 'A' ? 31 : 8} % případů) a pak bys přišel i o ${t === 11 ? 'zdvojenou' : 'rozdělenou'} sázku. Proto tady ${t === 11 ? 'nezdvojuješ' : 'nedělíš'}, ale jen ${LABEL[a] === 'HIT' ? 'táhneš' : LABEL[a]}.`;
   if (a === 'SUR') return `${soft ? 'Soft' : 'Hard'} ${t} proti ${d} je tak špatná ruka, že při hraní dlouhodobě ztratíš víc než polovinu sázky (${dw}). Vzdáním přijdeš přesně o 50 % — to je menší ztráta.`;
   const k = pair ? normTen(ranks[0]) : null;
   if (pair && a === 'P') {
@@ -1573,7 +1654,7 @@ function simRound(shoe, bet) {
   let wag = bet, net = 0;
   if (up.r === 'A' && shouldInsure(trueCount(shoe))) { const ins = bet / 2; wag += ins; net += isBJ(dealer) ? ins * 2 : -ins; }
   const dBJ = isBJ(dealer), pBJ = isBJ(hands[0].cards);
-  if (!dBJ && !pBJ) {
+  if (!(dBJ && !settings.enhc) && !pBJ) {
     for (let i = 0; i < hands.length; i++) {
       const h = hands[i];
       if (h.cards.length === 1) h.cards.push(drawFrom(shoe));
@@ -1986,15 +2067,16 @@ const KB = [
   [/true|tc\b|skutečn/, 'True count = running count ÷ počet balíčků, které ještě zbývají v botě. Příklad: RC +6 a zbývají 3 balíčky → TC +2. Zbytek boty odhaduj podle odhazovacího zásobníku. Každý bod TC posouvá výhodu zhruba o 0,5 % ve tvůj prospěch.'],
   [/running|rc\b|průběž/, 'Running count je průběžný součet hodnot všech viděných karet. V Hi-Lo: 2–6 = +1, 7–9 = 0, 10–A = −1. Počítej po dvojicích karet, které se vyruší (desítka + malá = 0), jde to rychleji.'],
   [/pojišt|insurance/, 'Pojištění je sázka, že dealer má blackjack. Bez počítání ho nikdy neber — kasino na něm má výhodu kolem 7 %. S Hi-Lo se vyplatí až od **TC +3** a víc.'],
-  [/surrender|vzdát|vzdan/, 'Late surrender: vzdáš ruku a dostaneš zpět polovinu sázky. Vyplatí se u 16 proti 9, 10 a esu, u 15 proti 10 (a s H17 i proti esu) a u 17 proti esu (H17). Jinde se hraje.'],
+  [/surrender|vzdát|vzdan/, 'Surrender v Česku a většině Evropy obvykle nejde — pokud ho tvé kasino nemá, vypni ho v nastavení stolu a strategie se přepočítá. Kde ho povolují (late surrender): vzdáš ruku a dostaneš zpět polovinu sázky. Vyplatí se u 16 proti 9, 10 a esu, u 15 proti 10 (a s H17 i proti esu) a u 17 proti esu (H17). Jinde se hraje.'],
   [/double|zdvoj/, 'Zdvoj, když jsi favorit: 11 skoro vždy, 10 proti 2–9, 9 proti 3–6, soft 13–18 proti slabé kartě dealera (hlavně 4–6). Dostaneš jen jednu kartu, ale vyděláš dvojnásobek.'],
   [/split|rozdě|páry|pary/, 'Esa a osmičky děl vždy. Desítky a pětky nikdy. 9,9 děl proti 2–9 kromě 7. 2,2 / 3,3 / 7,7 proti 2–7, 6,6 proti 2–6, 4,4 jen s DAS proti 5–6.'],
   [/soft/, 'Soft ruka má eso za 11, takže ji jednou kartou nepřetáhneš. Hraj ji agresivněji: soft 13–17 skoro nikdy nestojí, soft 18 stojí proti 2, 7, 8, táhne proti 9–A a zdvojuje proti 3–6.'],
   [/sáz|saz|bet|spread|jednot/, 'Sázej podle TC: do TC +1 minimální jednotka, pak zhruba (TC − 1) jednotek. U stolu ti to ukáže tlačítko 💡 před rozdáním. Dobrý spread v botě je 1–8 až 1–12 jednotek.'],
+  [/skryt|enhc|evropsk|bez druhé/, 'V Evropě si dealer obvykle bere druhou kartu až po tobě. Když pak má blackjack, prohraješ i zdvojené a rozdělené sázky. Proto proti 10 a esu nezdvojuješ 11 a proti esu nedělíš esa ani osmičky (proti 10 osmičky taky ne). Zapni si to v nastavení: „Dealer bez skryté karty“.'],
   [/h17|s17|soft 17/, 'H17 znamená, že dealer táhne i na soft 17. Pro hráče je to horší asi o 0,2 %. Mění to pár tahů: 11 vs A zdvoj, soft 18 vs 2 zdvoj, 15 vs A a 17 vs A surrender.'],
   [/6:5|3:2|výplat/, 'Stůl 6:5 vyplácí za blackjack jen 12 místo 15 na sázku 10. Přidává kasinu skoro 1,4 % — víc, než dokáže počítání karet vyrovnat. Hraj jen 3:2.'],
   [/index|odchyl|i18|fab/, 'Indexy jsou odchylky od základní strategie podle TC. Nejdůležitější: pojištění od TC +3, 16 vs 10 stát od TC 0, 15 vs 10 stát od TC +4, 12 vs 3 stát od TC +2, 10,10 vs 5 split od TC +5. Trénuj je v sadě „Indexy I18“.'],
-  [/hodnot|hi-?lo|systém|system/, () => `Používáš **${SYS[settings.system].name}**. Hodnoty karet si procvič v Drilech → Hodnoty, než přejdeš na running count.`],
+  [/hodnot|hi-?lo|systém|system|\bko\b|\bzen\b|omega/, () => `Používáš **${SYS[settings.system].name}**. ${SYS_INFO[settings.system].pro} Slabina: ${SYS_INFO[settings.system].con} Porovnání všech systémů najdeš v nastavení → Systém.`],
   [/rating|hodnocen/, 'Rating roste, když máš v sadě víc správně, než se od tvé úrovně čeká. Čím vyšší rating, tím přísnější očekávání. Perfektní sada dává bonus +10.'],
   [/odejít|odejit|prohráv|rozptyl|smůl/, 'Krátkodobé výsledky ovládá náhoda — i dokonalá hra má propady o desítky jednotek. Hodnoť rozhodnutí, ne výsledek. Odejdi, když jsi unavený nebo přestáváš počítat přesně.']
 ];
@@ -2227,20 +2309,47 @@ function checkGoals() {
 /* =====================================================================
    NASTAVENÍ (SHEET)
    ===================================================================== */
+const PRESETS = [
+  { id: 'eu', name: 'Evropské kasino', d: 'Jako ve většině českých a evropských kasin: 6 balíčků, dealer stojí na soft 17, bez surrenderu, dealer si druhou kartu bere až po tobě.', s: { decks: 6, h17: false, das: true, sur: false, enhc: true, bjPay: 1.5, insurance: true } },
+  { id: 'vegas', name: 'Las Vegas', d: '6 balíčků, dealer táhne na soft 17 a hned nahlíží pod kartu na blackjack, late surrender povolen.', s: { decks: 6, h17: true, das: true, sur: true, enhc: false, bjPay: 1.5, insurance: true } },
+  { id: 'basic', name: 'Jen základní strategie', d: 'Evropská pravidla a nic navíc: bez surrenderu, bez pojištění, bez počítání karet a indexů. Ideální začátek.', s: { decks: 6, h17: false, das: true, sur: false, enhc: true, bjPay: 1.5, insurance: false, showCount: false, deviations: false } }
+];
+const RULE_KEYS = ['decks', 'h17', 'das', 'sur', 'enhc', 'bjPay', 'insurance', 'showCount', 'deviations'];
+function applyPreset(id) {
+  const pr = PRESETS.find(x => x.id === id); if (!pr) return;
+  Object.assign(settings, { showCount: true, deviations: true }, pr.s, { style: id, styleSet: true });
+  saveSettings(); CH = buildCharts();
+  if (game.phase === 'bet' && !game.busy) newShoe(false); else game.needsShuffle = true;
+  stats.coach.plan = null;
+  if (sheetKind === 'settings') renderSettings();
+  refreshView(); toast(`Styl: ${pr.name}`);
+}
+function presetsHTML(onPick) {
+  return PRESETS.map(pr => `<button class="preset${settings.style === pr.id ? ' on' : ''}" onclick="${onPick}('${pr.id}')"><span class="rd"></span><span><b>${pr.name}</b><span class="sdesc">${pr.d}</span></span></button>`).join('')
+    + (settings.style === 'custom' ? `<div class="preset on" style="cursor:default"><span class="rd"></span><span><b>Vlastní</b><span class="sdesc">Pravidla sis upravil níže.</span></span></div>` : '');
+}
+function openStylePicker() {
+  openModal(`<h3>Jak chceš hrát?</h3><p>Vyber pravidla, která znáš z kasina. Strategie, trénink i kouč se jim přizpůsobí. Kdykoli to změníš v nastavení stolu.</p>
+    <div style="text-align:left">${presetsHTML('pickStyleFirst')}</div>
+    <button class="btn btn-dark" style="font-size:15px;padding:14px" onclick="settings.styleSet=true;saveSettings();closeModal();openSettings()">Nastavit podrobně</button>`);
+}
+function pickStyleFirst(id) { closeModal(); applyPreset(id); }
 const SCHEMA = [
   { group: 'Pravidla stolu', items: [
     { key: 'decks', label: 'Počet balíčků', type: 'seg', options: [[4, '4'], [6, '6'], [8, '8']] },
-    { key: 'h17', label: 'Dealer na soft 17', type: 'seg', options: [[true, 'Táhne (H17)'], [false, 'Stojí (S17)']] },
-    { key: 'bjPay', label: 'Výplata blackjacku', type: 'seg', options: [[1.5, '3 : 2'], [1.2, '6 : 5']] },
-    { key: 'das', label: 'Double po splitu (DAS)', type: 'toggle' },
-    { key: 'sur', label: 'Late surrender', type: 'toggle' },
-    { key: 'pen', label: 'Penetrace boty', type: 'seg', options: [[.65, '65 %'], [.75, '75 %'], [.85, '85 %']] },
+    { key: 'h17', label: 'Dealer na soft 17', desc: 'Táhne (H17) je běžné v USA, stojí (S17) v Evropě. S17 je pro tebe o ~0,2 % lepší.', type: 'seg', options: [[true, 'Táhne (H17)'], [false, 'Stojí (S17)']] },
+    { key: 'enhc', label: 'Dealer bez skryté karty', desc: 'Evropské pravidlo: dealer si druhou kartu bere až po tobě. Když pak má blackjack, prohráváš i zdvojené a rozdělené sázky — proto se proti 10 a esu méně zdvojuje a dělí.', type: 'toggle' },
+    { key: 'bjPay', label: 'Výplata blackjacku', desc: '6 : 5 je past — přidává kasinu skoro 1,4 %.', type: 'seg', options: [[1.5, '3 : 2'], [1.2, '6 : 5']] },
+    { key: 'das', label: 'Double po splitu (DAS)', desc: 'Můžeš zdvojit i ruku vzniklou rozdělením páru. Ve většině kasin ano.', type: 'toggle' },
+    { key: 'sur', label: 'Surrender (vzdání)', desc: 'Vzdáš ruku a dostaneš zpět polovinu sázky. V Česku a většině Evropy obvykle nejde — když ho vypneš, tlačítko zmizí a strategie se přepočítá.', type: 'toggle' },
+    { key: 'insurance', label: 'Nabízet pojištění', desc: 'Když dealer ukazuje eso. Bez počítání karet ho nikdy neber; když ho nechceš řešit, vypni.', type: 'toggle' },
+    { key: 'pen', label: 'Penetrace boty', desc: 'Kolik boty se rozdá před mícháním. Vyšší = víc šancí pro počítače.', type: 'seg', options: [[.65, '65 %'], [.75, '75 %'], [.85, '85 %']] },
     { key: 'unit', label: 'Jednotka sázky (rada poradce)', type: 'seg', options: [[5, '5'], [10, '10'], [25, '25']] }
   ]},
   { group: 'Počítání', items: [
-    { key: 'system', label: 'Systém', type: 'select', options: Object.keys(SYS).map(k => [k, SYS[k].name]) },
-    { key: 'showCount', label: 'Ukazovat RC/TC a X-ray u stolu', type: 'toggle' },
-    { key: 'deviations', label: 'Indexy I18 + Fab 4 (Hi-Lo)', type: 'toggle' }
+    { key: 'system', label: 'Systém', type: 'system' },
+    { key: 'showCount', label: 'Ukazovat RC/TC a X-ray u stolu', desc: 'Vypni, až budeš chtít počítat sám a jen si to ověřovat.', type: 'toggle' },
+    { key: 'deviations', label: 'Indexy I18 + Fab 4 (Hi-Lo)', desc: 'Odchylky od základní strategie podle true countu. Zapni až po zvládnutí základní strategie.', type: 'toggle' }
   ]},
   { group: 'Aplikace', items: [
     { key: 'coach', label: 'Zpětná vazba a vysvětlení chyb', type: 'toggle' },
@@ -2251,13 +2360,15 @@ const SCHEMA = [
 ];
 function openSettings() { sheetKind = 'settings'; renderSettings(); }
 function renderSettings() {
-  let h = `<div style="display:flex;justify-content:space-between;align-items:center"><h3>Nastavení</h3><button class="tag" onclick="closeSheet()">Hotovo</button></div>`;
+  const lab = it => `<span>${it.label}${it.desc ? `<span class="sdesc">${it.desc}</span>` : ''}</span>`;
+  let h = `<div style="display:flex;justify-content:space-between;align-items:center"><h3>Nastavení</h3><button class="tag" onclick="closeSheet()">Hotovo</button></div>
+    <div class="sg"><div class="cap">Styl hry</div>${presetsHTML('applyPreset')}</div>`;
   for (const g of SCHEMA) {
     h += `<div class="sg"><div class="cap">${g.group}</div>`;
     for (const it of g.items) {
-      if (it.type === 'toggle') h += `<div class="si"><span>${it.label}</span><button class="sw${settings[it.key] ? ' on' : ''}" onclick="setSetting('${it.key}',${!settings[it.key]})"></button></div>`;
-      else if (it.type === 'seg') h += `<div class="si col" style="gap:10px"><span>${it.label}</span><div class="seg">${it.options.map(([v, l], i) => `<button class="${settings[it.key] === v ? 'on' : ''}" onclick="setSettingIdx('${it.key}',${i})">${l}</button>`).join('')}</div></div>`;
-      else h += `<div class="si"><span>${it.label}</span><select class="sel" onchange="setSetting('${it.key}',this.value)">${it.options.map(([v, l]) => `<option value="${v}" ${settings[it.key] === v ? 'selected' : ''}>${l}</option>`).join('')}</select></div>`;
+      if (it.type === 'toggle') h += `<div class="si">${lab(it)}<button class="sw${settings[it.key] ? ' on' : ''}" onclick="setSetting('${it.key}',${!settings[it.key]})"></button></div>`;
+      else if (it.type === 'seg') h += `<div class="si col" style="gap:10px">${lab(it)}<div class="seg">${it.options.map(([v, l], i) => `<button class="${settings[it.key] === v ? 'on' : ''}" onclick="setSettingIdx('${it.key}',${i})">${l}</button>`).join('')}</div></div>`;
+      else h += `<button class="si" style="width:100%" onclick="pickSystem()"><span>${it.label}<span class="sdesc">Jak systémy fungují, výhody a nevýhody</span></span><b class="l">${SYS[settings.system].name} ›</b></button>`;
     }
     h += '</div>';
   }
@@ -2267,11 +2378,14 @@ function renderSettings() {
 }
 function setSettingIdx(key, i) { setSetting(key, SCHEMA.flatMap(g => g.items).find(x => x.key === key).options[i][0]); }
 function setSetting(key, val) {
-  settings[key] = val; saveSettings(); CH = buildCharts();
-  if (['decks', 'system', 'pen'].includes(key)) { if (game.phase === 'bet' && !game.busy) newShoe(false); else game.needsShuffle = true; }
+  settings[key] = val;
+  if (RULE_KEYS.includes(key)) { settings.style = 'custom'; for (const pr of PRESETS) if (Object.entries(Object.assign({ showCount: true, deviations: true }, pr.s)).every(([k, v]) => settings[k] === v)) settings.style = pr.id; stats.coach.plan = null; }
+  saveSettings(); CH = buildCharts();
+  if (['decks', 'system', 'pen', 'enhc'].includes(key)) { if (game.phase === 'bet' && !game.busy) newShoe(false); else game.needsShuffle = true; }
   if (sheetKind === 'settings') renderSettings();
   refreshView();
 }
+
 function resetAll() {
   if (!confirm('Opravdu smazat rating, statistiky, lekce a úspěchy?')) return;
   stats = DEFAULT_STATS(); stats.ratingHist.push({ t: Date.now(), r: 1000 }); store('bjwiz4_stats', stats); closeSheet(); refreshView(); toast('Data vynulována');
@@ -2280,10 +2394,13 @@ function resetAll() {
 /* =====================================================================
    NAVIGACE
    ===================================================================== */
-let currentView = null;
+let currentView = null, prevView = 'train';
+function leavePlay() { if (game.busy) return; hideMistake(); showView(prevView); }
 function showView(v) {
   if (!$('view-' + v)) v = 'train';
+  if (v !== 'play') prevView = v;
   currentView = v;
+  $('app').classList.toggle('playing', v === 'play');
   document.querySelectorAll('.view').forEach(el => el.classList.toggle('active', el.id === 'view-' + v));
   document.querySelectorAll('.nav button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
   if (v !== 'drills') clearInterval(cvDemoT);
@@ -2325,6 +2442,7 @@ CH = buildCharts();
 newShoe(false);
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
 showView(load('bjwiz4_view') || 'train');
+if (!settings.styleSet) setTimeout(openStylePicker, 400);
 </script>
 </body>
 </html>
